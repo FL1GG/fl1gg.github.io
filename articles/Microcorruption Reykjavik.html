@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.Dlb7pXDV.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.CimdS63P.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.ouMra9AW.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Bds1QhS9.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.CO75G284.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.CLhogo2J.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CW9wjobI.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.Cf4XbhDB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/jRw7-Y13.js"><!--[--><!--]--><title>Microcorruption Reykjavik</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-8v83zk"><h1 id="site-title" class="svelte-8v83zk"> Anoth3r Site</h1> <h1 class="blink svelte-8v83zk">_</h1></div> <hr class="hr-top svelte-8v83zk"> <div class="svelte-8v83zk"><ul class="nav-bar svelte-8v83zk"><li class="svelte-8v83zk"><a href="/" class="svelte-8v83zk">Home</a></li> <li class="svelte-8v83zk"><a href="/about" class="svelte-8v83zk">About</a></li> <li class="svelte-8v83zk"><a href="https://github.com/fl1gg" class="svelte-8v83zk">Github</a></li> <li class="svelte-8v83zk"><a href="/contact" class="svelte-8v83zk">Contact</a></li></ul></div> <br class="svelte-8v83zk"><!----> <!----><div class="articles svelte-1oy2dsc"><div class="header svelte-1oy2dsc"><h1 class="title svelte-1oy2dsc">Microcorruption Reykjavik</h1> <p class="subtitle svelte-1oy2dsc">The process and solution for the fifth Microcorruption level</p></div> <div class="tags svelte-1oy2dsc"><!--[--><span class="tag svelte-1oy2dsc">#microcorruption</span><span class="tag svelte-1oy2dsc">#reversing</span><span class="tag svelte-1oy2dsc">#pwn</span><!--]--></div> <br class="svelte-1oy2dsc"> <hr class="svelte-1oy2dsc"> <div id="page" class="svelte-1oy2dsc"><!----><p>As always here is the manual for Microcorruption:</p> <ul><li>Manual: <a href="https://microcorruption.com/public/manual.pdf" rel="nofollow">https://microcorruption.com/public/manual.pdf</a></li></ul> <p>Additionally, the MSP430 specific booklets:</p> <ul><li>User Guide: <a href="https://www.ti.com/lit/ug/slau049f/slau049f.pdf" rel="nofollow">https://www.ti.com/lit/ug/slau049f/slau049f.pdf</a></li> <li>ABI: <a href="https://www.ti.com/lit/an/slaa534a/slaa534a.pdf" rel="nofollow">https://www.ti.com/lit/an/slaa534a/slaa534a.pdf</a></li></ul> <p>On first glance at the main function it looks like we are doing something to at the address 2400 and the calling a function there.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#79C0FF">4438</span><span style="color:#E6EDF3"> &#x3C;main></span></span>
+<span class="line"><span style="color:#79C0FF">4438</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">3e40</span><span style="color:#79C0FF"> 2045</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4520</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r14</span><span style="color:#8B949E">     ; ?</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">443c:</span><span style="color:#E6EDF3">  0f4e           </span><span style="color:#FF7B72">mov</span><span style="color:#79C0FF">	r14</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span><span style="color:#8B949E">         ; ?</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">443e:</span><span style="color:#79C0FF">  3e40</span><span style="color:#E6EDF3"> f800      </span><span style="color:#FF7B72">mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0xf8</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r14</span><span style="color:#8B949E">       ; ?</span></span>
+<span class="line"><span style="color:#79C0FF">4442</span><span style="color:#E6EDF3">:  3f40 </span><span style="color:#79C0FF">0024</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2400</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span><span style="color:#8B949E">     ; r15, I assume address to place function</span></span>
+<span class="line"><span style="color:#79C0FF">4446</span><span style="color:#E6EDF3">:  b012 </span><span style="color:#79C0FF">8644</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4486</span><span style="color:#E6EDF3"> &#x3C;enc>    </span><span style="color:#8B949E">; long function which I would like to ignore </span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">444a:</span><span style="color:#E6EDF3">  b012 </span><span style="color:#79C0FF">0024</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2400</span><span style="color:#8B949E">          ; call a function at 2400</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">444e:</span><span style="color:#E6EDF3">  0f43           clr	</span><span style="color:#79C0FF">r15</span><span style="color:#8B949E">              ; r15 the return factor (return 0)</span></span></code></pre><!----> <p>adding a breakpoint at 444a, and then checking the memory at 2400 we are left with the following</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>0b12 0412 0441 2452 3150 e0ff 3b40 2045 </span></span>
+<span class="line"><span>073c 1b53 8f11 0f12 0312 b012 6424 2152 </span></span>
+<span class="line"><span>6f4b 4f93 f623 3012 0a00 0312 b012 6424 </span></span>
+<span class="line"><span>2152 3012 1f00 3f40 dcff 0f54 0f12 2312  </span></span>
+<span class="line"><span>b012 6424 3150 0600 b490 0cc6 dcff 0520  </span></span>
+<span class="line"><span>3012 7f00 b012 6424 2153 3150 2000 3441  </span></span>
+<span class="line"><span>3b41 3041 1e41 0200 0212 0f4e 8f10 024f  </span></span>
+<span class="line"><span>32d0 0080 b012 1000 3241 3041 d21a 189a  </span></span>
+<span class="line"><span>22dc 45b9 4279 2d55 858e a4a2 67d7 14ae   </span></span>
+<span class="line"><span>a119 76f6 42cb 1c04 0efa a61b 74a7 416b   </span></span>
+<span class="line"><span>d237 a253 22e4 66af c1a5 938b 8971 9b88 </span></span>
+<span class="line"><span>fa9b 6674 4e21 2a6b b143 9151 3dcc a6f5 </span></span>
+<span class="line"><span>daa7 db3f 8d3c 4d18 4736 dfa6 459a 2461   </span></span>
+<span class="line"><span>921d 3291 14e6 8157 b0fe 2ddd 400b 8688 </span></span>
+<span class="line"><span>6310 3ab3 612b 0bd9 483f 4e04 5870 4c38 </span></span>
+<span class="line"><span>c93c ff36 0e01 7f3e fa55 aeef 051c 242c </span></span>
+<span class="line"><span>3c56 13af e57b 8abf 3040 c537 656e 8278 </span></span>
+<span class="line"><span>9af9 9d02 be83 b38c e181 3ad8 395a fce3  </span></span>
+<span class="line"><span>4f03 8ec9 9395 4a15 ce3b fd1e 7779 c9c3  </span></span>
+<span class="line"><span>5ff2 3dc7 5953 8826 d0b5 d9f8 639e e970   </span></span>
+<span class="line"><span>01cd 2119 ca6a d12c 97e2 7538 96c5 8f28   </span></span>
+<span class="line"><span>d682 1be5 ab20 7389 48aa 1fa3 472f a564 </span></span>
+<span class="line"><span>de2d b710 9081 5205 8d44 cff4 bc2e 577a </span></span>
+<span class="line"><span>d5f4 a851 c243 277d a4ca 1e6b</span></span></code></pre><!----> <p>Using the provided disassembler: <a href="https://microcorruption.com/assembler" rel="nofollow">https://microcorruption.com/assembler</a></p> <p>we find the following code, which I have cleaned up a little bit:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#79C0FF">2400</span><span style="color:#E6EDF3">: &#x3C;main2></span></span>
+<span class="line"><span style="color:#E6EDF3">0b12           </span><span style="color:#FF7B72">push</span><span style="color:#79C0FF">	r11</span><span style="color:#E6EDF3">                  </span></span>
+<span class="line"><span style="color:#79C0FF">0412</span><span style="color:#FF7B72">           push</span><span style="color:#E6EDF3">	r4                  </span></span>
+<span class="line"><span style="color:#79C0FF">0441</span><span style="color:#FF7B72">           mov</span><span style="color:#79C0FF">	sp</span><span style="color:#E6EDF3">, r4               </span></span>
+<span class="line"><span style="color:#79C0FF">2452</span><span style="color:#FF7B72">           add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4</span><span style="color:#E6EDF3">, r4             </span></span>
+<span class="line"><span style="color:#79C0FF">3150</span><span style="color:#E6EDF3"> e0ff      </span><span style="color:#FF7B72">add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0xffe0</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">sp</span><span style="color:#E6EDF3">               </span></span>
+<span class="line"><span style="color:#E6EDF3">3b40 </span><span style="color:#79C0FF">2045</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4520</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r11</span><span style="color:#8B949E">              ; looking in memory 0x4520 is the string "what's the password?"</span></span>
+<span class="line"><span style="color:#E6EDF3">073c           </span><span style="color:#FF7B72">jmp</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0x10</span><span style="color:#8B949E">                    ; jump to test_at_end</span></span>
+<span class="line"><span style="color:#D2A8FF">print_char:</span></span>
+<span class="line"><span style="color:#E6EDF3">1b53           </span><span style="color:#FF7B72">inc</span><span style="color:#79C0FF">	r11</span></span>
+<span class="line"><span style="color:#E6EDF3">8f11           sxt	</span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#E6EDF3">0f12           </span><span style="color:#FF7B72">push</span><span style="color:#79C0FF">	r15</span></span>
+<span class="line"><span style="color:#79C0FF">0312</span><span style="color:#FF7B72">           push</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x0</span><span style="color:#8B949E">                      ; take one argument putchar INT</span></span>
+<span class="line"><span style="color:#E6EDF3">b012 </span><span style="color:#79C0FF">6424</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2464</span><span style="color:#E6EDF3"> &#x3C;</span><span style="color:#FF7B72">INT</span><span style="color:#E6EDF3">>      </span></span>
+<span class="line"><span style="color:#D2A8FF">test_at_end:</span></span>
+<span class="line"><span style="color:#79C0FF">2152</span><span style="color:#FF7B72">           add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">sp</span></span>
+<span class="line"><span style="color:#E6EDF3">6f4b           </span><span style="color:#FF7B72">mov</span><span style="color:#E6EDF3">.b	@</span><span style="color:#79C0FF">r11</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span><span style="color:#8B949E">                 ; check if at end of what's the password?</span></span>
+<span class="line"><span style="color:#E6EDF3">4f93           tst.b	</span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#E6EDF3">f623           </span><span style="color:#FF7B72">jnz</span><span style="color:#E6EDF3">	$-</span><span style="color:#79C0FF">0x12</span><span style="color:#8B949E">                    ; jump to print_char if not at end </span></span>
+<span class="line"><span style="color:#79C0FF">3012</span><span style="color:#E6EDF3"> 0a00      </span><span style="color:#FF7B72">push</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0xa</span><span style="color:#8B949E">                      ; newline character</span></span>
+<span class="line"><span style="color:#79C0FF">0312</span><span style="color:#FF7B72">           push</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x0</span><span style="color:#8B949E">                      ; putchar the newline character &#x3C;INT></span></span>
+<span class="line"><span style="color:#E6EDF3">b012 </span><span style="color:#79C0FF">6424</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2464</span><span style="color:#E6EDF3"> &#x3C;</span><span style="color:#FF7B72">INT</span><span style="color:#E6EDF3">>             </span><span style="color:#8B949E">;</span></span>
+<span class="line"><span style="color:#79C0FF">2152</span><span style="color:#FF7B72">           add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">sp</span></span>
+<span class="line"><span style="color:#79C0FF">3012</span><span style="color:#E6EDF3"> 1f00      </span><span style="color:#FF7B72">push</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x1f</span></span>
+<span class="line"><span style="color:#E6EDF3">3f40 dcff      </span><span style="color:#FF7B72">mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0xffdc</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span><span style="color:#E6EDF3">              </span></span>
+<span class="line"><span style="color:#E6EDF3">0f54           </span><span style="color:#FF7B72">add</span><span style="color:#E6EDF3">	r4, </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#E6EDF3">0f12           </span><span style="color:#FF7B72">push</span><span style="color:#79C0FF">	r15</span><span style="color:#8B949E">                       ; location to store user input </span></span>
+<span class="line"><span style="color:#79C0FF">2312</span><span style="color:#FF7B72">           push</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2</span><span style="color:#8B949E">                      ; read characters from standard input </span></span>
+<span class="line"><span style="color:#E6EDF3">b012 </span><span style="color:#79C0FF">6424</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2464</span><span style="color:#E6EDF3"> &#x3C;</span><span style="color:#FF7B72">INT</span><span style="color:#E6EDF3">>             </span><span style="color:#8B949E">;</span></span>
+<span class="line"><span style="color:#79C0FF">3150</span><span style="color:#79C0FF"> 0600</span><span style="color:#FF7B72">      add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x6</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">sp</span></span>
+<span class="line"><span style="color:#E6EDF3">b490 0cc6 dcff </span><span style="color:#FF7B72">cmp</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0xc60c</span><span style="color:#E6EDF3">, -</span><span style="color:#79C0FF">0x24</span><span style="color:#E6EDF3">(r4)        </span><span style="color:#8B949E">; check 43fe - 24 = 43DA to be equal to c60c (or 0cc6 )</span></span>
+<span class="line"><span style="color:#79C0FF">0520</span><span style="color:#FF7B72">           jnz</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0xc</span></span>
+<span class="line"><span style="color:#79C0FF">3012</span><span style="color:#E6EDF3"> 7f00      </span><span style="color:#FF7B72">push</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x7f</span><span style="color:#8B949E">                     ; check if password is correct and unlock if true</span></span>
+<span class="line"><span style="color:#E6EDF3">b012 </span><span style="color:#79C0FF">6424</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2464</span><span style="color:#E6EDF3"> &#x3C;</span><span style="color:#FF7B72">INT</span><span style="color:#E6EDF3">>             </span><span style="color:#8B949E">; </span></span>
+<span class="line"><span style="color:#79C0FF">2153</span><span style="color:#E6EDF3">           incd	</span><span style="color:#79C0FF">sp</span></span>
+<span class="line"><span style="color:#79C0FF">3150</span><span style="color:#79C0FF"> 2000</span><span style="color:#FF7B72">      add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x20</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">sp</span></span>
+<span class="line"><span style="color:#79C0FF">3441</span><span style="color:#FF7B72">           pop</span><span style="color:#E6EDF3">	r4</span></span>
+<span class="line"><span style="color:#E6EDF3">3b41           </span><span style="color:#FF7B72">pop</span><span style="color:#79C0FF">	r11</span></span>
+<span class="line"><span style="color:#79C0FF">3041</span><span style="color:#FF7B72">           ret</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79C0FF">2464</span><span style="color:#E6EDF3">: &#x3C;</span><span style="color:#FF7B72">INT</span><span style="color:#E6EDF3">> </span><span style="color:#8B949E">; this is the exact same code as the interrupt function</span></span>
+<span class="line"><span style="color:#79C0FF">1e41</span><span style="color:#79C0FF"> 0200</span><span style="color:#FF7B72">      mov</span><span style="color:#79C0FF">	0x2</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">sp</span><span style="color:#E6EDF3">), </span><span style="color:#79C0FF">r14</span></span>
+<span class="line"><span style="color:#79C0FF">0212</span><span style="color:#FF7B72">           push</span><span style="color:#E6EDF3">	sr</span></span>
+<span class="line"><span style="color:#E6EDF3">0f4e           </span><span style="color:#FF7B72">mov</span><span style="color:#79C0FF">	r14</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#E6EDF3">8f10           swpb	</span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#E6EDF3">024f           </span><span style="color:#FF7B72">mov</span><span style="color:#79C0FF">	r15</span><span style="color:#E6EDF3">, sr</span></span>
+<span class="line"><span style="color:#E6EDF3">32d0 </span><span style="color:#79C0FF">0080</span><span style="color:#E6EDF3">      bis	#</span><span style="color:#79C0FF">0x8000</span><span style="color:#E6EDF3">, sr</span></span>
+<span class="line"><span style="color:#E6EDF3">b012 </span><span style="color:#79C0FF">1000</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x10</span></span>
+<span class="line"><span style="color:#79C0FF">3241</span><span style="color:#FF7B72">           pop</span><span style="color:#E6EDF3">	sr</span></span>
+<span class="line"><span style="color:#79C0FF">3041</span><span style="color:#FF7B72">           ret</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">... more code that stopped making sense</span></span></code></pre><!----> <p>So it looks like this code is printing the string “what’s the password?” one character at a time and then checking if the password begins with <code>0cc6</code>. The important part is below:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#79C0FF">3150</span><span style="color:#79C0FF"> 0600</span><span style="color:#FF7B72">      add</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x6</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">sp</span></span>
+<span class="line"><span style="color:#E6EDF3">b490 0cc6 dcff </span><span style="color:#FF7B72">cmp</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0xc60c</span><span style="color:#E6EDF3">, -</span><span style="color:#79C0FF">0x24</span><span style="color:#E6EDF3">(r4)        </span><span style="color:#8B949E">; check 43fe - 24 = 43DA to be equal to c60c (or 0cc6 accounting for endian)</span></span>
+<span class="line"><span style="color:#79C0FF">0520</span><span style="color:#FF7B72">           jnz</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0xc</span></span>
+<span class="line"><span style="color:#79C0FF">3012</span><span style="color:#E6EDF3"> 7f00      </span><span style="color:#FF7B72">push</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x7f</span><span style="color:#8B949E">                     ; check if password is correct and unlock if true</span></span>
+<span class="line"><span style="color:#E6EDF3">b012 </span><span style="color:#79C0FF">6424</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2464</span><span style="color:#E6EDF3"> &#x3C;</span><span style="color:#FF7B72">INT</span><span style="color:#E6EDF3">>             </span></span></code></pre><!----> <p>Simply entering 0cc6 solves this problem.</p><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1sefmzd = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.ouMra9AW.js"),
+						import("../_app/immutable/entry/app.CO75G284.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>

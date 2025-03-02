@@ -1,0 +1,42 @@
+import{a as e,t as m}from"../chunks/Dwf-VV-B.js";import"../chunks/D4n077k-.js";import{n as c}from"../chunks/DCFcRc6v.js";var l=m(`<h1 class="svelte-f8dmsu">Contact Information</h1> <p class="svelte-f8dmsu">Email: cafligg20@gmail.com</p> <h1 class="svelte-f8dmsu">PGP Key</h1> <p class="svelte-f8dmsu">If you find it is necessary, here is my pgp public key:</p> <pre class="svelte-f8dmsu">-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+Oot3xIyiI3opKv7ShXdsx4o9WxRQRv3zHo79
+=C+Za
+-----END PGP PUBLIC KEY BLOCK-----
+</pre>`,1);function A(s){var n=l();c(8),e(s,n)}export{A as component};

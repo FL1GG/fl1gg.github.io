@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.Dlb7pXDV.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.CimdS63P.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.ouMra9AW.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Bds1QhS9.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.CO75G284.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.CLhogo2J.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CW9wjobI.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.Cf4XbhDB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/jRw7-Y13.js"><!--[--><!--]--><title>Microcorruption Sydney</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-8v83zk"><h1 id="site-title" class="svelte-8v83zk"> Anoth3r Site</h1> <h1 class="blink svelte-8v83zk">_</h1></div> <hr class="hr-top svelte-8v83zk"> <div class="svelte-8v83zk"><ul class="nav-bar svelte-8v83zk"><li class="svelte-8v83zk"><a href="/" class="svelte-8v83zk">Home</a></li> <li class="svelte-8v83zk"><a href="/about" class="svelte-8v83zk">About</a></li> <li class="svelte-8v83zk"><a href="https://github.com/fl1gg" class="svelte-8v83zk">Github</a></li> <li class="svelte-8v83zk"><a href="/contact" class="svelte-8v83zk">Contact</a></li></ul></div> <br class="svelte-8v83zk"><!----> <!----><div class="articles svelte-1oy2dsc"><div class="header svelte-1oy2dsc"><h1 class="title svelte-1oy2dsc">Microcorruption Sydney</h1> <p class="subtitle svelte-1oy2dsc">The process and solution for the second Microcorruption level</p></div> <div class="tags svelte-1oy2dsc"><!--[--><span class="tag svelte-1oy2dsc">#microcorruption</span><span class="tag svelte-1oy2dsc">#reversing</span><span class="tag svelte-1oy2dsc">#pwn</span><!--]--></div> <br class="svelte-1oy2dsc"> <hr class="svelte-1oy2dsc"> <div id="page" class="svelte-1oy2dsc"><!----><p>In this challenge we are given the lock again with the standard information about it.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>There is  no default password  on the LockIT  Pro---upon receiving</span></span>
+<span class="line"><span>the LockIT Pro, a new password must be set by connecting it to the</span></span>
+<span class="line"><span>LockIT Pro  App and  entering a password  when prompted,  and then</span></span>
+<span class="line"><span>restarting the LockIT Pro using the red button on the back.</span></span></code></pre><!----> <p>Again we look at the check_password function:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#E6EDF3">448a &#x3C;check_password></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">448a:</span><span style="color:#E6EDF3">  bf90 403c </span><span style="color:#79C0FF">0000</span><span style="color:#FF7B72"> cmp</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x3c40</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0x0</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">r15</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#79C0FF">4490</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">0d20</span><span style="color:#FF7B72">           jnz</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0x1c</span><span style="color:#E6EDF3"> &#x3C;check_password+</span><span style="color:#79C0FF">0x22</span><span style="color:#E6EDF3">></span></span>
+<span class="line"><span style="color:#79C0FF">4492</span><span style="color:#E6EDF3">:  bf90 5b4b </span><span style="color:#79C0FF">0200</span><span style="color:#FF7B72"> cmp</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4b5b</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0x2</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">r15</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#79C0FF">4498</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">0920</span><span style="color:#FF7B72">           jnz</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0x14</span><span style="color:#E6EDF3"> &#x3C;check_password+</span><span style="color:#79C0FF">0x22</span><span style="color:#E6EDF3">></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">449a:</span><span style="color:#E6EDF3">  bf90 556f </span><span style="color:#79C0FF">0400</span><span style="color:#FF7B72"> cmp</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x6f55</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0x4</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">r15</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44a0:</span><span style="color:#79C0FF">  0520</span><span style="color:#FF7B72">           jnz</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0xc</span><span style="color:#E6EDF3"> &#x3C;check_password+</span><span style="color:#79C0FF">0x22</span><span style="color:#E6EDF3">></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44a2:</span><span style="color:#79C0FF">  1e43</span><span style="color:#FF7B72">           mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x1</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r14</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44a4:</span><span style="color:#E6EDF3">  bf90 </span><span style="color:#79C0FF">6041</span><span style="color:#79C0FF"> 0600</span><span style="color:#FF7B72"> cmp</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4160</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0x6</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">r15</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44aa:</span><span style="color:#79C0FF">  0124</span><span style="color:#FF7B72">           jz</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0x4</span><span style="color:#E6EDF3"> &#x3C;check_password+</span><span style="color:#79C0FF">0x24</span><span style="color:#E6EDF3">></span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44ac:</span><span style="color:#79C0FF">  0e43</span><span style="color:#E6EDF3">           clr	</span><span style="color:#79C0FF">r14</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44ae:</span><span style="color:#E6EDF3">  0f4e           </span><span style="color:#FF7B72">mov</span><span style="color:#79C0FF">	r14</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">44b0:</span><span style="color:#79C0FF">  3041</span><span style="color:#FF7B72">           ret</span></span></code></pre><!----> <p>It appears that this is a simple comparison chain. It is simply checking 2 bytes of the password at a time. So we just need to put these bytes together to create our password.</p> <p>One thing to keep in mind is the endianness of the data being retrieved from memory. In this case, the system uses little endian (you can determine this by inputting data and looking how it is stored/retrieved from memory. Alternatively, you can read the manual and google MSP430. The manual can be found here: <a href="https://microcorruption.com/public/manual.pdf" rel="nofollow">https://microcorruption.com/public/manual.pdf</a>).</p> <p>That means data is stored with the most significant byte at the lowest memory address. Since we are retrieving and comparing the data a word at a time, we need to flip each individual word instead of the entire password.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>3c40 -> 403c </span></span>
+<span class="line"><span>4b5b -> 5b4b</span></span>
+<span class="line"><span>6f55 -> 556f</span></span>
+<span class="line"><span>4160 -> 6041</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Result: 403c5b4b556f6041</span></span></code></pre><!----> <p>Using this input (remember to select hex encoded), we are able to solve this challenge.</p><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1sefmzd = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.ouMra9AW.js"),
+						import("../_app/immutable/entry/app.CO75G284.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>

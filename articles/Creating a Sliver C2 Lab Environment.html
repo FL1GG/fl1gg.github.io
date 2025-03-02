@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.Dlb7pXDV.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.CimdS63P.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.ouMra9AW.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Bds1QhS9.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.CO75G284.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.CLhogo2J.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CW9wjobI.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.Cf4XbhDB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/jRw7-Y13.js"><!--[--><!--]--><title>Creating a Sliver C2 Lab Environment</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-8v83zk"><h1 id="site-title" class="svelte-8v83zk"> Anoth3r Site</h1> <h1 class="blink svelte-8v83zk">_</h1></div> <hr class="hr-top svelte-8v83zk"> <div class="svelte-8v83zk"><ul class="nav-bar svelte-8v83zk"><li class="svelte-8v83zk"><a href="/" class="svelte-8v83zk">Home</a></li> <li class="svelte-8v83zk"><a href="/about" class="svelte-8v83zk">About</a></li> <li class="svelte-8v83zk"><a href="https://github.com/fl1gg" class="svelte-8v83zk">Github</a></li> <li class="svelte-8v83zk"><a href="/contact" class="svelte-8v83zk">Contact</a></li></ul></div> <br class="svelte-8v83zk"><!----> <!----><div class="articles svelte-1oy2dsc"><div class="header svelte-1oy2dsc"><h1 class="title svelte-1oy2dsc">Creating a Sliver C2 Lab Environment</h1> <p class="subtitle svelte-1oy2dsc">Creation of a sliver c2 lab environment for testing and bug hunting</p></div> <div class="tags svelte-1oy2dsc"><!--[--><span class="tag svelte-1oy2dsc">#sliver</span><span class="tag svelte-1oy2dsc">#c2</span><!--]--></div> <br class="svelte-1oy2dsc"> <hr class="svelte-1oy2dsc"> <div id="page" class="svelte-1oy2dsc"><!----><p>In the past half a year, I have been using sliver, a c2 framework. In this article I am going to be demonstrating how to set up a sliver server instance from the source code to examine its internals in later articles. I also want to note that this will be getting the master version of sliver. THIS IS NOT A RELEASE BRANCH, and should not be used in production. Don’t follow this guide if you are trying to set up a sliver instance for production.</p> <p>I have the following objectives for this article:</p> <ul><li>Document how to install sliver from scratch on a fresh Ubuntu box.</li> <li>Document how to start the sliver server</li> <li>Document how to start sliver clients</li></ul> <p>First and foremost sliver is written in Go. Therefore the first thing we need to do is install golang:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FFA657">sudo</span><span style="color:#A5D6FF"> apt-get</span><span style="color:#A5D6FF"> update</span></span>
+<span class="line"><span style="color:#8B949E"># snap grabs latest version (1.23), whereas apt installs 1.18 which is not a high enough version for sliver1.6>=1.21</span></span>
+<span class="line"><span style="color:#FFA657">sudo</span><span style="color:#A5D6FF"> snap</span><span style="color:#A5D6FF"> install</span><span style="color:#A5D6FF"> go</span><span style="color:#79C0FF"> --classic</span><span style="color:#79C0FF"> --channel</span><span style="color:#A5D6FF"> stable</span></span></code></pre><!----> <p>We also will need several dependencies for sliver.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FFA657">sudo</span><span style="color:#A5D6FF"> apt</span><span style="color:#A5D6FF"> install</span><span style="color:#A5D6FF"> git</span><span style="color:#A5D6FF"> make</span><span style="color:#A5D6FF"> sed</span><span style="color:#A5D6FF"> zip</span><span style="color:#A5D6FF"> curl</span><span style="color:#A5D6FF"> tar</span><span style="color:#79C0FF"> -y</span></span></code></pre><!----> <p>Now we can clone the sliver repository.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FFA657">git</span><span style="color:#A5D6FF"> clone</span><span style="color:#A5D6FF"> https://github.com/BishopFox/sliver.git</span></span>
+<span class="line"><span style="color:#79C0FF">cd</span><span style="color:#A5D6FF"> sliver</span></span></code></pre><!----> <p>And then finally compile it:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FFA657">make</span></span></code></pre><!----> <p>This make will take a while. It is important that every time we make code changes, we redo this make.</p> <p>Once this is completed we can run a sliver server instance simply by typing</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FFA657">./sliver-server</span></span></code></pre><!----> <p>Most commands can be done from the sliver server, however if multiple people need to access our instance we should use sliver clients. To set up a client we need to generate a client config file. Within the sliver-server run the following command editing as needed:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FFA657">sliver</span><span style="color:#FF7B72"> ></span><span style="color:#A5D6FF"> new-operator</span><span style="color:#79C0FF"> --name</span><span style="color:#A5D6FF"> user1</span><span style="color:#79C0FF"> --lhost</span><span style="color:#79C0FF"> 127.0.0.1</span><span style="color:#79C0FF"> --permissions</span><span style="color:#A5D6FF"> all</span><span style="color:#79C0FF"> --save</span><span style="color:#A5D6FF"> /home/vboxuser/.sliver-client/configs/</span></span>
+<span class="line"><span style="color:#FFA657">sliver</span><span style="color:#FF7B72"> ></span><span style="color:#A5D6FF"> multiplayer</span></span></code></pre><!----> <p>Now we can run a client</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#79C0FF">cd</span><span style="color:#A5D6FF"> ~/sliver</span></span>
+<span class="line"><span style="color:#FFA657">./sliver-client</span></span></code></pre><!----><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1sefmzd = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.ouMra9AW.js"),
+						import("../_app/immutable/entry/app.CO75G284.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>
