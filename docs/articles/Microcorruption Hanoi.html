@@ -4,25 +4,25 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		
-		<link href="../_app/immutable/assets/0.Dlb7pXDV.css" rel="stylesheet">
-		<link href="../_app/immutable/assets/4.CimdS63P.css" rel="stylesheet">
-		<link rel="modulepreload" href="../_app/immutable/entry/start.CA_wHMO-.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/DD8_7pLE.js">
+		<link href="../_app/immutable/assets/0.CkCJ_Iij.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.BGKaKUs6.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.BZDirAW7.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/OvuKmyMO.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
-		<link rel="modulepreload" href="../_app/immutable/entry/app.TGZ1RBKz.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.B4FAo7LE.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/0.VfO5N2ud.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.BV327y4F.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/Dn8mKSux.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/4.DlvMBQ3k.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CJcI3dRj.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.Cnwoe82_.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/jRw7-Y13.js"><!--[--><!--]--><title>Microcorruption Hanoi</title>
 	</head>
 	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
-		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-8v83zk"><h1 id="site-title" class="svelte-8v83zk"> Anoth3r Site</h1> <h1 class="blink svelte-8v83zk">_</h1></div> <hr class="hr-top svelte-8v83zk"> <div class="svelte-8v83zk"><ul class="nav-bar svelte-8v83zk"><li class="svelte-8v83zk"><a href="/" class="svelte-8v83zk">Home</a></li> <li class="svelte-8v83zk"><a href="/about" class="svelte-8v83zk">About</a></li> <li class="svelte-8v83zk"><a href="https://github.com/fl1gg" class="svelte-8v83zk">Github</a></li> <li class="svelte-8v83zk"><a href="/contact" class="svelte-8v83zk">Contact</a></li></ul></div> <br class="svelte-8v83zk"><!----> <!----><div class="articles svelte-1oy2dsc"><div class="header svelte-1oy2dsc"><h1 class="title svelte-1oy2dsc">Microcorruption Hanoi</h1> <p class="subtitle svelte-1oy2dsc">The process and solution for the third Microcorruption level</p></div> <div class="tags svelte-1oy2dsc"><!--[--><span class="tag svelte-1oy2dsc">#microcorruption</span><span class="tag svelte-1oy2dsc">#reversing</span><span class="tag svelte-1oy2dsc">#pwn</span><!--]--></div> <br class="svelte-1oy2dsc"> <hr class="svelte-1oy2dsc"> <div id="page" class="svelte-1oy2dsc"><!----><p>Here is the manual for Microcorruption which we will need for this challenge:</p> <ul><li>Manual: <a href="https://microcorruption.com/public/manual.pdf" rel="nofollow">https://microcorruption.com/public/manual.pdf</a></li></ul> <p>Additionally, the MSP430 specific booklets:</p> <ul><li>User Guide: <a href="https://www.ti.com/lit/ug/slau049f/slau049f.pdf" rel="nofollow">https://www.ti.com/lit/ug/slau049f/slau049f.pdf</a></li> <li>ABI: <a href="https://www.ti.com/lit/an/slaa534a/slaa534a.pdf" rel="nofollow">https://www.ti.com/lit/an/slaa534a/slaa534a.pdf</a></li></ul> <p>Alright, when we select this challenge we are given some new information:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>LockIT Pro Hardware  Security Module 1 stores  the login password,</span></span>
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-1pnrz5s"><h1 id="site-title" class="svelte-1pnrz5s"> Anoth3r Site</h1> <h1 class="blink svelte-1pnrz5s">_</h1></div> <hr class="hr-top svelte-1pnrz5s"> <div class="svelte-1pnrz5s"><ul class="nav-bar svelte-1pnrz5s"><li class="svelte-1pnrz5s"><a href="/" class="svelte-1pnrz5s">Home</a></li> <li class="svelte-1pnrz5s"><a href="/about" class="svelte-1pnrz5s">About</a></li> <li class="svelte-1pnrz5s"><a href="https://github.com/fl1gg" class="svelte-1pnrz5s">Github</a></li> <li class="svelte-1pnrz5s"><a href="/contact" class="svelte-1pnrz5s">Contact</a></li></ul></div> <br class="svelte-1pnrz5s"><!----> <!----><div class="articles svelte-1qj7sin"><div class="header svelte-1qj7sin"><h1 class="title svelte-1qj7sin">Microcorruption Hanoi</h1> <p class="subtitle svelte-1qj7sin">The process and solution for the third Microcorruption level</p></div> <div class="tags svelte-1qj7sin"><!--[--><span class="tag svelte-1qj7sin">#microcorruption</span><span class="tag svelte-1qj7sin">#reversing</span><span class="tag svelte-1qj7sin">#pwn</span><!--]--></div> <br class="svelte-1qj7sin"> <hr class="svelte-1qj7sin"> <div id="page" class="svelte-1qj7sin"><!----><p>Here is the manual for Microcorruption which we will need for this challenge:</p> <ul><li>Manual: <a href="https://microcorruption.com/public/manual.pdf" rel="nofollow">https://microcorruption.com/public/manual.pdf</a></li></ul> <p>Additionally, the MSP430 specific booklets:</p> <ul><li>User Guide: <a href="https://www.ti.com/lit/ug/slau049f/slau049f.pdf" rel="nofollow">https://www.ti.com/lit/ug/slau049f/slau049f.pdf</a></li> <li>ABI: <a href="https://www.ti.com/lit/an/slaa534a/slaa534a.pdf" rel="nofollow">https://www.ti.com/lit/an/slaa534a/slaa534a.pdf</a></li></ul> <p>Alright, when we select this challenge we are given some new information:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>LockIT Pro Hardware  Security Module 1 stores  the login password,</span></span>
 <span class="line"><span>ensuring users  can not access  the password through  other means.</span></span>
 <span class="line"><span>The LockIT Pro  can send the LockIT Pro HSM-1  a password, and the</span></span>
 <span class="line"><span>HSM will  return if the password  is correct by setting  a flag in</span></span>
@@ -81,15 +81,15 @@
 			
 			<script>
 				{
-					__sveltekit_zqainu = {
+					__sveltekit_1n5f3yy = {
 						base: new URL("..", location).pathname.slice(0, -1)
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("../_app/immutable/entry/start.CA_wHMO-.js"),
-						import("../_app/immutable/entry/app.TGZ1RBKz.js")
+						import("../_app/immutable/entry/start.BZDirAW7.js"),
+						import("../_app/immutable/entry/app.B4FAo7LE.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 4],
