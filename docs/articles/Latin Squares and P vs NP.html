@@ -6,20 +6,20 @@
 		
 		<link href="../_app/immutable/assets/0.CkCJ_Iij.css" rel="stylesheet">
 		<link href="../_app/immutable/assets/4.BGKaKUs6.css" rel="stylesheet">
-		<link rel="modulepreload" href="../_app/immutable/entry/start.BZDirAW7.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/OvuKmyMO.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.jDE0ajOv.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DHZXbjhS.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
-		<link rel="modulepreload" href="../_app/immutable/entry/app.B4FAo7LE.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.BLNEpzoT.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/0.BV327y4F.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.B9Abgxyr.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
 		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CJcI3dRj.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/4.Cnwoe82_.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/jRw7-Y13.js"><!--[--><!--]--><title>Latin Squares and P vs NP</title>
+		<link rel="modulepreload" href="../_app/immutable/chunks/C5fjRMoA.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.D4dQD_mJ.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CLQzAQWW.js"><!--[--><!--]--><title>Latin Squares and P vs NP</title>
 	</head>
 	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
 		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-1pnrz5s"><h1 id="site-title" class="svelte-1pnrz5s"> Anoth3r Site</h1> <h1 class="blink svelte-1pnrz5s">_</h1></div> <hr class="hr-top svelte-1pnrz5s"> <div class="svelte-1pnrz5s"><ul class="nav-bar svelte-1pnrz5s"><li class="svelte-1pnrz5s"><a href="/" class="svelte-1pnrz5s">Home</a></li> <li class="svelte-1pnrz5s"><a href="/about" class="svelte-1pnrz5s">About</a></li> <li class="svelte-1pnrz5s"><a href="https://github.com/fl1gg" class="svelte-1pnrz5s">Github</a></li> <li class="svelte-1pnrz5s"><a href="/contact" class="svelte-1pnrz5s">Contact</a></li></ul></div> <br class="svelte-1pnrz5s"><!----> <!----><div class="articles svelte-1qj7sin"><div class="header svelte-1qj7sin"><h1 class="title svelte-1qj7sin">Latin Squares and P vs NP</h1> <p class="subtitle svelte-1qj7sin">Brief summary of what P = NP is and how it relates to Latin Squares</p></div> <div class="tags svelte-1qj7sin"><!--[--><span class="tag svelte-1qj7sin">#latin-squares</span><span class="tag svelte-1qj7sin">#np-complete</span><span class="tag svelte-1qj7sin">#p=np</span><!--]--></div> <br class="svelte-1qj7sin"> <hr class="svelte-1qj7sin"> <div id="page" class="svelte-1qj7sin"><!----><p>Before we can even get to Latin Squares, we need to talk about what P vs NP actually means.</p> <p>A little bit of background:</p> <p>As with everything in Computer Science, we care about how fast a problem can be solved. We have classifications of problems and importantly for P vs NP we care about decision problems. Decision problems are problems where given an input, the solution can be reduced to either yes or no.</p> <p>Secondly, we have to talk about Turing machines. Turing machines are an abstraction of a computer that can be modeled mathematically. This abstraction is able to model any computer algorithm. There is a lot to Turing machines, and I encourage anyone interested in Computer Science to learn more about them. For our purposes, we care about the difference between a deterministic Turing machine and a non-deterministic Turing Machine.</p> <p>The simplified difference between these two is the manor in which they solve problems. A deterministic Turing machine has one action that can be performed at any one state, whereas a non-deterministic Turing machine allows for multiple actions to be performed from a state. You may see deterministic machines referred to having a computational path while non-deterministic machines referred to having a computational tree. Importantly for us, for any one step, there is only one next step in a deterministic Turing machine.</p> <p>Thirdly, we need to talk about polynomial time. In big O notation, polynomial time would loosely be the set of equations where n is raised to a power (a polynomial). ie: O(n<sup>x</sup>) where x is an integer. So O(n<sup>2</sup> + 3n) is polynomial time.</p> <p>When n becomes the exponent we are now in “exponential” time. So O(x<sup>n</sup>) for some integer x, is not polynomial time. So for the common types of Big O notations we can draw the line between these two.</p> <b>Big Os</b>: <br> Constant    - O(1) <br> Logarithmic - O(log n) <br> Loglinear   - O(n log n) <br> Polynomial  - O(n^x) <br> ----------------------------- Where we draw the line. <br> Exponential - O(x^n) <br> Factorial   - O(n!) <br> <br> <p>Given all this, P and NP refer to two decision problem sets.</p> <ul><li><b>P</b> is the set of decision problems that can be <b>solved</b> in polynomial time (by a deterministic Turing machine).</li> <li><b>NP</b> is the set of decision problems that can <b>verified</b> in polynomial time (by a deterministic Turing machine).</li></ul> <p>So what NP = P is actually asking is: Are the problems that can be verified in polynomial time also the problems that can be solved in polynomial time?</p> <p>The general consensus is that P != NP. This is a good thing as almost all of our encryption relies on one way functions which are dependant on P != NP.</p> <p>So what does this have to do with Latin Squares? Latin Square Completion is a NP-Complete problem. NP-Complete problems are problems where if you can figure out how to solve them in polynomial time, you can solve all other NP problems in polynomial time.</p> <h2>Solving Latin Squares</h2> <p>Solving incomplete Latin Squares is a pretty typical question during coding events. I whipped up the following solution today with some comments, so that you can look through it. As you can see, this is definitely not polynomial time.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#A5D6FF">"""</span></span>
@@ -110,15 +110,15 @@
 			
 			<script>
 				{
-					__sveltekit_1n5f3yy = {
+					__sveltekit_12p3ed0 = {
 						base: new URL("..", location).pathname.slice(0, -1)
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("../_app/immutable/entry/start.BZDirAW7.js"),
-						import("../_app/immutable/entry/app.B4FAo7LE.js")
+						import("../_app/immutable/entry/start.jDE0ajOv.js"),
+						import("../_app/immutable/entry/app.BLNEpzoT.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 4],

