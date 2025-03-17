@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.CkCJ_Iij.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.BGKaKUs6.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.Cx-0n8EB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BWnATT0-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.DKTZEJGr.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.4FUs_ruB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBvMsN_n.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.CIZ-SDIx.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CML7eN2H.js"><!--[--><!--]--><title>UTCTF 2025 - Autokey Cipher</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-1pnrz5s"><h1 id="site-title" class="svelte-1pnrz5s"> Anoth3r Site</h1> <h1 class="blink svelte-1pnrz5s">_</h1></div> <hr class="hr-top svelte-1pnrz5s"> <div class="svelte-1pnrz5s"><ul class="nav-bar svelte-1pnrz5s"><li class="svelte-1pnrz5s"><a href="/" class="svelte-1pnrz5s">Home</a></li> <li class="svelte-1pnrz5s"><a href="/about" class="svelte-1pnrz5s">About</a></li> <li class="svelte-1pnrz5s"><a href="https://github.com/fl1gg" class="svelte-1pnrz5s">Github</a></li> <li class="svelte-1pnrz5s"><a href="/contact" class="svelte-1pnrz5s">Contact</a></li></ul></div> <br class="svelte-1pnrz5s"><!----> <!----><div class="articles svelte-1qj7sin"><div class="header svelte-1qj7sin"><h1 class="title svelte-1qj7sin">UTCTF 2025 - Autokey Cipher</h1> <p class="subtitle svelte-1qj7sin">Description of the solution to the Autoclave Crypto challenge.</p></div> <div class="tags svelte-1qj7sin"><!--[--><span class="tag svelte-1qj7sin">#utctf</span><span class="tag svelte-1qj7sin">#utctf2025</span><span class="tag svelte-1qj7sin">#crypto</span><span class="tag svelte-1qj7sin">#autoclave</span><!--]--></div> <br class="svelte-1qj7sin"> <hr class="svelte-1qj7sin"> <div id="page" class="svelte-1qj7sin"><!----><p>This challenge gives us the following description and cipher text.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>I know people say you can do a frequency analysis on autokey ciphers over long text, but the flag is short so it'll be fine.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>lpqwma&#123;rws_ywpqaauad_rrqfcfkq_wuey_ifwo_xlkvxawjh_pkbgrzf&#125;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>by jocelyn (@jocelyn3270 on discord)</span></span></code></pre><!----> <p>It tells us that this challenge is using the Autokey cipher also know as the Autoclave cipher. This cipher works similarly to the Vigenère cipher but instead of repeating the key, once the key runs out it uses the plaintext.</p> <p>We can leak the first part of the key since we know the flag begins with “utflag”</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FF7B72">for</span><span style="color:#E6EDF3"> i </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">,</span><span style="color:#79C0FF">9</span><span style="color:#E6EDF3">):</span></span>
+<span class="line"><span style="color:#E6EDF3">    key </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF">chr</span><span style="color:#E6EDF3">(((</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c___2[i]) </span><span style="color:#FF7B72">-</span><span style="color:#79C0FF"> ord</span><span style="color:#E6EDF3">(plain[i])) </span><span style="color:#FF7B72">%</span><span style="color:#79C0FF"> 26</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> 97</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#79C0FF">    print</span><span style="color:#E6EDF3">(key)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">key </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> 'rwllmu....'</span></span></code></pre><!----> <p>Now we can leak where the plaintext begins by checking for where the start of the (plaintext[i] xor plaintext[j]) seems to be.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FF7B72">for</span><span style="color:#E6EDF3"> i </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">6</span><span style="color:#E6EDF3">,</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(c)):</span></span>
+<span class="line"><span style="color:#E6EDF3">    key </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> ""</span></span>
+<span class="line"><span style="color:#FF7B72">    for</span><span style="color:#E6EDF3"> j </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">6</span><span style="color:#E6EDF3">):</span></span>
+<span class="line"><span style="color:#FF7B72">        if</span><span style="color:#E6EDF3">(c[i</span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3">j] </span><span style="color:#FF7B72">==</span><span style="color:#A5D6FF"> '_'</span><span style="color:#FF7B72"> or</span><span style="color:#E6EDF3"> c[i</span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3">j] </span><span style="color:#FF7B72">==</span><span style="color:#A5D6FF"> '&#123;'</span><span style="color:#E6EDF3">):</span></span>
+<span class="line"><span style="color:#E6EDF3">            key </span><span style="color:#FF7B72">+=</span><span style="color:#A5D6FF"> '_'</span></span>
+<span class="line"><span style="color:#FF7B72">        else</span><span style="color:#E6EDF3">:</span></span>
+<span class="line"><span style="color:#E6EDF3">            key </span><span style="color:#FF7B72">+=</span><span style="color:#79C0FF"> chr</span><span style="color:#E6EDF3">(((</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c[i</span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3">j]) </span><span style="color:#FF7B72">-</span><span style="color:#79C0FF"> ord</span><span style="color:#E6EDF3">(plain[j])) </span><span style="color:#FF7B72">%</span><span style="color:#79C0FF"> 26</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> 97</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79C0FF">    print</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">str</span><span style="color:#E6EDF3">(i) </span><span style="color:#FF7B72">+</span><span style="color:#A5D6FF"> ": "</span><span style="color:#FF7B72"> +</span><span style="color:#E6EDF3"> key)</span></span>
+<span class="line"></span></code></pre><!----> <p>From this we see that the plaintext part of the key may start at index 11, with the word “frequency.”</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>6: _yrh_s</span></span>
+<span class="line"><span>7: xdn_yq</span></span>
+<span class="line"><span>8: cz_nwj</span></span>
+<span class="line"><span>9: y_tlpk</span></span>
+<span class="line"><span>10: _frequ</span></span>
+<span class="line"><span>11: edkfau</span></span>
+<span class="line"><span>12: cwlpao</span></span>
+<span class="line"><span>13: vxvpuu</span></span></code></pre><!----> <p>Further testing shows leak is actually at 9 due to our poor math in accounting for underscores</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FF7B72">>>></span><span style="color:#79C0FF"> chr</span><span style="color:#E6EDF3">(((</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c[</span><span style="color:#79C0FF">11</span><span style="color:#E6EDF3">]) </span><span style="color:#FF7B72">-</span><span style="color:#79C0FF"> ord</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">'t'</span><span style="color:#E6EDF3">)) </span><span style="color:#FF7B72">%</span><span style="color:#79C0FF"> 26</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> 97</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#A5D6FF">'f'</span></span>
+<span class="line"><span style="color:#FF7B72">>>></span><span style="color:#79C0FF"> chr</span><span style="color:#E6EDF3">(((</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c[</span><span style="color:#79C0FF">12</span><span style="color:#E6EDF3">]) </span><span style="color:#FF7B72">-</span><span style="color:#79C0FF"> ord</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">'f'</span><span style="color:#E6EDF3">)) </span><span style="color:#FF7B72">%</span><span style="color:#79C0FF"> 26</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> 97</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#A5D6FF">'l'</span></span></code></pre><!----> <p>At this point we can assume the following:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>c = 'lpqwma&#123;rws_ywpqaauad_rrqfcfkq_wuey_ifwo_xlkvxawjh_pkbgrzf&#125;'</span></span>
+<span class="line"><span>k = 'rwllmu ..u tflag.... ........ .... .... ......... ....... '</span></span>
+<span class="line"><span>p = 'utflag&#123;..y_frequency_........_...._...._........._.......&#125;'</span></span></code></pre><!----> <p>So from this we know the key length is 8.</p> <p>We also can leak the plaintext for c[7], c[8] by predicting the word. Since, Autoclave’s key is actually the key + plaintext, we know the p[7], p[8] is xored with p[16], p[17] respectively to create the cipher at c[16], c[17]. To put simply:</p> <center><!----><math><mrow><mi>c</mi><mo form="prefix" stretchy="false">[</mo><mn>16</mn><mo form="postfix" stretchy="false">]</mo><mo>=</mo></mrow><mrow><mi>p</mi><mo form="prefix" stretchy="false">[</mo><mn>7</mn><mo form="postfix" stretchy="false">]</mo><mo>⊕︎</mo></mrow><mrow><mi>p</mi><mo form="prefix" stretchy="false">[</mo><mn>16</mn><mo form="postfix" stretchy="false">]</mo></mrow></math><!----></center> <p>Therefore,</p> <center><!----><math><mrow><mi>p</mi><mo form="prefix" stretchy="false">[</mo><mn>7</mn><mo form="postfix" stretchy="false">]</mo><mo>=</mo></mrow><mrow><mi>c</mi><mo form="prefix" stretchy="false">[</mo><mn>16</mn><mo form="postfix" stretchy="false">]</mo><mo>⊕︎</mo></mrow><mrow><mi>p</mi><mo form="prefix" stretchy="false">[</mo><mn>16</mn><mo form="postfix" stretchy="false">]</mo></mrow></math><!----></center> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FF7B72">>>></span><span style="color:#79C0FF"> chr</span><span style="color:#E6EDF3">(((</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c[</span><span style="color:#79C0FF">16</span><span style="color:#E6EDF3">]) </span><span style="color:#FF7B72">-</span><span style="color:#79C0FF"> ord</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">'e'</span><span style="color:#E6EDF3">)) </span><span style="color:#FF7B72">%</span><span style="color:#79C0FF"> 26</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> 97</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#A5D6FF">'w'</span></span>
+<span class="line"><span style="color:#FF7B72">>>></span><span style="color:#79C0FF"> chr</span><span style="color:#E6EDF3">(((</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c[</span><span style="color:#79C0FF">17</span><span style="color:#E6EDF3">]) </span><span style="color:#FF7B72">-</span><span style="color:#79C0FF"> ord</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">'n'</span><span style="color:#E6EDF3">)) </span><span style="color:#FF7B72">%</span><span style="color:#79C0FF"> 26</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> 97</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#A5D6FF">'h'</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">key </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> 'rwllmuvp'</span></span></code></pre><!----> <p>Finally lets decrypt the flag. Someone else already wrote a decryptor, so lets use that: <a href="https://crypto.interactive-maths.com/autokey-cipher.html" rel="nofollow">https://crypto.interactive-maths.com/autokey-cipher.html</a></p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>k: rwllmuvp</span></span>
+<span class="line"><span>c: lpqwmarwsywpqaauadrrqfcfkqwueyifwoxlkvxawjhpkbgrzf</span></span>
+<span class="line"><span>p: utflagwhyfrequencyanalysiswhenknowbeginningletters</span></span></code></pre><!----> <p>This gives us our flag:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>utflag&#123;why_frequency_analysis_when_know_beginning_letters&#125;</span></span></code></pre><!----><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1frpc8i = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.Cx-0n8EB.js"),
+						import("../_app/immutable/entry/app.DKTZEJGr.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>

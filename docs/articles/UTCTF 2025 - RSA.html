@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.CkCJ_Iij.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.BGKaKUs6.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.Cx-0n8EB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BWnATT0-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.DKTZEJGr.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.4FUs_ruB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBvMsN_n.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.CIZ-SDIx.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CML7eN2H.js"><!--[--><!--]--><title>UTCTF 2025 - RSA</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-1pnrz5s"><h1 id="site-title" class="svelte-1pnrz5s"> Anoth3r Site</h1> <h1 class="blink svelte-1pnrz5s">_</h1></div> <hr class="hr-top svelte-1pnrz5s"> <div class="svelte-1pnrz5s"><ul class="nav-bar svelte-1pnrz5s"><li class="svelte-1pnrz5s"><a href="/" class="svelte-1pnrz5s">Home</a></li> <li class="svelte-1pnrz5s"><a href="/about" class="svelte-1pnrz5s">About</a></li> <li class="svelte-1pnrz5s"><a href="https://github.com/fl1gg" class="svelte-1pnrz5s">Github</a></li> <li class="svelte-1pnrz5s"><a href="/contact" class="svelte-1pnrz5s">Contact</a></li></ul></div> <br class="svelte-1pnrz5s"><!----> <!----><div class="articles svelte-1qj7sin"><div class="header svelte-1qj7sin"><h1 class="title svelte-1qj7sin">UTCTF 2025 - RSA</h1> <p class="subtitle svelte-1qj7sin">Description of the solution to the RSA Crypto challenge.</p></div> <div class="tags svelte-1qj7sin"><!--[--><span class="tag svelte-1qj7sin">#utctf</span><span class="tag svelte-1qj7sin">#utctf2025</span><span class="tag svelte-1qj7sin">#crypto</span><span class="tag svelte-1qj7sin">#rsa</span><!--]--></div> <br class="svelte-1qj7sin"> <hr class="svelte-1qj7sin"> <div id="page" class="svelte-1qj7sin"><!----><p>In this challenge, we are greeted by the following description:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>Idk why people make e so large for rsa... it's so much easier to just use 3. Why use big number when small number do trick?</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>by jocelyn (@jocelyn3270 on discord)</span></span></code></pre><!----> <p>Additionally, we are given the following RSA information:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>n: 21507386633439519550169998646896627263990342978145866337442653437291500212804540039826669967421406761783804525632864075787433199834243745244830254423626433057121784913173342863755047712719972310827106310978325541157116399004997956022957497614561358547338887866829687642469922480325337783646738698964794799137629074290136943475809453339879850896418933264952741717996251598299033247598332283374311388548417533241578128405412876297518744631221434811566527970724653020096586968674253730535704100196440896139791213814925799933321426996992353761056678153980682453131865332141631387947508055668987573690117314953760510812159</span></span>
+<span class="line"><span>e: 3</span></span>
+<span class="line"><span>c: 6723702102195566573155033480869753489283107574855029844328060266358539778148984297827300182772738267875181687326892460074882512254133616280539109646843128644207390959955541800567609034853</span></span></code></pre><!----> <p>In order to solve this challenge we need to understand how rsa encrypts a message.</p> <center><!----><math><mrow><mi>c</mi><mo>≡</mo></mrow><mrow><msup><mi>m</mi><mi>e</mi></msup><mo></mo><mspace width="0.6667em"></mspace><mrow><mtext></mtext><mi>mod</mi></mrow><mspace width="0.1667em"></mspace><mspace width="0.1667em"></mspace><mi>n</mi></mrow></math><!----></center> <p>If e is significantly small, then potentially the mod never occurs. Since e is 3, taking the cube root of c may solve this challenge.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FF7B72">from</span><span style="color:#E6EDF3"> sympy </span><span style="color:#FF7B72">import</span><span style="color:#E6EDF3"> root</span></span>
+<span class="line"><span style="color:#FF7B72">from</span><span style="color:#E6EDF3"> Crypto.Util.number </span><span style="color:#FF7B72">import</span><span style="color:#E6EDF3"> long_to_bytes</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">n </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> 21507386633439519550169998646896627263990342978145866337442653437291500212804540039826669967421406761783804525632864075787433199834243745244830254423626433057121784913173342863755047712719972310827106310978325541157116399004997956022957497614561358547338887866829687642469922480325337783646738698964794799137629074290136943475809453339879850896418933264952741717996251598299033247598332283374311388548417533241578128405412876297518744631221434811566527970724653020096586968674253730535704100196440896139791213814925799933321426996992353761056678153980682453131865332141631387947508055668987573690117314953760510812159</span></span>
+<span class="line"><span style="color:#E6EDF3">e </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> 3</span></span>
+<span class="line"><span style="color:#E6EDF3">c </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> 6723702102195566573155033480869753489283107574855029844328060266358539778148984297827300182772738267875181687326892460074882512254133616280539109646843128644207390959955541800567609034853</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8B949E"># because e is 3, m^e is hopefully less than n, so we can cube root c and see what we get</span></span>
+<span class="line"><span style="color:#E6EDF3">msg </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> root(c, </span><span style="color:#79C0FF">3</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#79C0FF">int</span><span style="color:#E6EDF3">(msg)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79C0FF">print</span><span style="color:#E6EDF3">(long_to_bytes(msg))</span></span>
+<span class="line"></span></code></pre><!----> <p>Again, using sympy we are able to leak the flag.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>utflag&#123;hmm_maybe_bad_idea&#125;</span></span></code></pre><!----><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1frpc8i = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.Cx-0n8EB.js"),
+						import("../_app/immutable/entry/app.DKTZEJGr.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>

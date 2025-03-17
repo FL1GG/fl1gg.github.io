@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link href="../_app/immutable/assets/0.CkCJ_Iij.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/4.BGKaKUs6.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.Cx-0n8EB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BWnATT0-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.DKTZEJGr.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.4FUs_ruB.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CBvMsN_n.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/4.CIZ-SDIx.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CML7eN2H.js"><!--[--><!--]--><title>UTCTF 2025 - Espathra-Csatu-Banette</title>
+	</head>
+	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
+		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-1pnrz5s"><h1 id="site-title" class="svelte-1pnrz5s"> Anoth3r Site</h1> <h1 class="blink svelte-1pnrz5s">_</h1></div> <hr class="hr-top svelte-1pnrz5s"> <div class="svelte-1pnrz5s"><ul class="nav-bar svelte-1pnrz5s"><li class="svelte-1pnrz5s"><a href="/" class="svelte-1pnrz5s">Home</a></li> <li class="svelte-1pnrz5s"><a href="/about" class="svelte-1pnrz5s">About</a></li> <li class="svelte-1pnrz5s"><a href="https://github.com/fl1gg" class="svelte-1pnrz5s">Github</a></li> <li class="svelte-1pnrz5s"><a href="/contact" class="svelte-1pnrz5s">Contact</a></li></ul></div> <br class="svelte-1pnrz5s"><!----> <!----><div class="articles svelte-1qj7sin"><div class="header svelte-1qj7sin"><h1 class="title svelte-1qj7sin">UTCTF 2025 - Espathra-Csatu-Banette</h1> <p class="subtitle svelte-1qj7sin">Description of the solution to the Espathra-Csatu-Banette Crypto challenge.</p></div> <div class="tags svelte-1qj7sin"><!--[--><span class="tag svelte-1qj7sin">#utctf</span><span class="tag svelte-1qj7sin">#utctf2025</span><span class="tag svelte-1qj7sin">#crypto</span><span class="tag svelte-1qj7sin">#aes</span><span class="tag svelte-1qj7sin">#ecb</span><!--]--></div> <br class="svelte-1qj7sin"> <hr class="svelte-1qj7sin"> <div id="page" class="svelte-1qj7sin"><!----><p>For this challenge we are given the following description.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>Everyone keeps telling me how ECB isn't meta-viable and that I should stop playing it to tournaments. Well, I love ECB so I've added some new tech that should hopefully get me some better results!</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>By Sasha (@kyrili on discord)</span></span>
+<span class="line"><span>nc challenge.utctf.live 7150 </span></span></code></pre><!----> <p>The accompanying server code looks like the following:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E">#!/usr/bin/env python3</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">from</span><span style="color:#E6EDF3"> Crypto.Cipher </span><span style="color:#FF7B72">import</span><span style="color:#79C0FF"> AES</span></span>
+<span class="line"><span style="color:#FF7B72">from</span><span style="color:#E6EDF3"> Crypto.Util.Padding </span><span style="color:#FF7B72">import</span><span style="color:#E6EDF3"> pad</span></span>
+<span class="line"><span style="color:#E6EDF3">key </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> open</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">"/src/key"</span><span style="color:#E6EDF3">, </span><span style="color:#A5D6FF">"rb"</span><span style="color:#E6EDF3">).read()</span></span>
+<span class="line"><span style="color:#E6EDF3">secret </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> open</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">"/src/flag.txt"</span><span style="color:#E6EDF3">, </span><span style="color:#A5D6FF">"r"</span><span style="color:#E6EDF3">).read()</span></span>
+<span class="line"><span style="color:#E6EDF3">cipher </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> AES</span><span style="color:#E6EDF3">.new(key, </span><span style="color:#79C0FF">AES</span><span style="color:#E6EDF3">.</span><span style="color:#79C0FF">MODE_ECB</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">while</span><span style="color:#79C0FF"> 1</span><span style="color:#E6EDF3">:</span></span>
+<span class="line"><span style="color:#79C0FF">    print</span><span style="color:#E6EDF3">(</span><span style="color:#A5D6FF">'Enter text to be encrypted: '</span><span style="color:#E6EDF3">, </span><span style="color:#FFA657">end</span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF">''</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#E6EDF3">    x </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> input</span><span style="color:#E6EDF3">()</span></span>
+<span class="line"><span style="color:#E6EDF3">    chksum </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> sum</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c) </span><span style="color:#FF7B72">for</span><span style="color:#E6EDF3"> c </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> x) </span><span style="color:#FF7B72">%</span><span style="color:#E6EDF3"> (</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(x)</span><span style="color:#FF7B72">+</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#E6EDF3">    pt </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> x[:chksum] </span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3"> secret </span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3"> x[chksum:]</span></span>
+<span class="line"><span style="color:#E6EDF3">    ct </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> cipher.encrypt(pad(pt.encode(</span><span style="color:#A5D6FF">'utf-8'</span><span style="color:#E6EDF3">), </span><span style="color:#79C0FF">AES</span><span style="color:#E6EDF3">.block_size))</span></span>
+<span class="line"><span style="color:#79C0FF">    print</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">hex</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">int</span><span style="color:#E6EDF3">.from_bytes(ct, </span><span style="color:#FFA657">byteorder</span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF">'big'</span><span style="color:#E6EDF3">)))</span></span></code></pre><!----> <p>There are two things to notice here. First, AES is being used in ECB mode. Fortunately, (for us) ECB is pretty famously insecure. See the ecb penguin: <a href="https://github.com/robertdavidgraham/ecb-penguin" rel="nofollow">https://github.com/robertdavidgraham/ecb-penguin</a>.</p> <p>Secondly, some weird math is going on to split up the plaintext we submit around the flag.</p> <p>So knowing it uses ECB means we can leak one character at a time by taking advantage of the block sizes. I will use a modification of this attack: <a href="https://exploit-notes.hdks.org/exploit/cryptography/algorithm/aes-ecb-padding-attack/" rel="nofollow">https://exploit-notes.hdks.org/exploit/cryptography/algorithm/aes-ecb-padding-attack/</a>.</p> <p>We will use a very similar bruteforce function.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> bruteforce</span><span style="color:#E6EDF3">():</span></span>
+<span class="line"><span style="color:#E6EDF3">    known_flag </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> 'utflag&#123;'</span></span>
+<span class="line"><span style="color:#E6EDF3">    total </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> buffer_space </span><span style="color:#FF7B72">-</span><span style="color:#79C0FF"> 1</span></span>
+<span class="line"><span style="color:#E6EDF3">    chars </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> ''</span><span style="color:#E6EDF3">.join([</span><span style="color:#79C0FF">chr</span><span style="color:#E6EDF3">(c) </span><span style="color:#FF7B72">for</span><span style="color:#E6EDF3"> c </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">32</span><span style="color:#E6EDF3">,</span><span style="color:#79C0FF">127</span><span style="color:#E6EDF3">)])</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">    while</span><span style="color:#79C0FF"> True</span><span style="color:#E6EDF3">:</span></span>
+<span class="line"><span style="color:#E6EDF3">        payload </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> '1'</span><span style="color:#FF7B72"> *</span><span style="color:#E6EDF3"> (total </span><span style="color:#FF7B72">-</span><span style="color:#79C0FF"> len</span><span style="color:#E6EDF3">(known_flag)) </span><span style="color:#8B949E">#           16    16    16     16    16     16 ...</span></span>
+<span class="line"><span style="color:#E6EDF3">        ciphertext_1 </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> encrypt(payload) </span><span style="color:#8B949E"># should be 111.. 111.. 111.. 111..? ????? ????? </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">        for</span><span style="color:#E6EDF3"> c </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> chars:</span></span>
+<span class="line"><span style="color:#E6EDF3">            ciphertext_2 </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> encrypt(payload </span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3"> known_flag </span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3"> c) </span><span style="color:#8B949E"># should be 111.. 111.. 111.. 111..c ????? ????? </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8B949E">			# Compare the known parts of the flag (plus 1 is our character checking slot)</span></span>
+<span class="line"><span style="color:#FF7B72">            if</span><span style="color:#E6EDF3"> ciphertext_2[</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">:total</span><span style="color:#FF7B72">+</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">] </span><span style="color:#FF7B72">==</span><span style="color:#E6EDF3"> ciphertext_1[</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">:total</span><span style="color:#FF7B72">+</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">]:</span></span>
+<span class="line"><span style="color:#E6EDF3">                known_flag </span><span style="color:#FF7B72">+=</span><span style="color:#E6EDF3"> c</span></span>
+<span class="line"><span style="color:#79C0FF">                print</span><span style="color:#E6EDF3">(known_flag)</span></span>
+<span class="line"><span style="color:#FF7B72">                break</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">            if</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c) </span><span style="color:#FF7B72">==</span><span style="color:#79C0FF"> 126</span><span style="color:#E6EDF3">):</span></span>
+<span class="line"><span style="color:#FF7B72">                break</span></span>
+<span class="line"><span style="color:#E6EDF3">    </span></span>
+<span class="line"><span style="color:#FF7B72">        if</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(known_flag) </span><span style="color:#FF7B72">></span><span style="color:#79C0FF"> 0</span><span style="color:#FF7B72"> and</span><span style="color:#E6EDF3"> known_flag[</span><span style="color:#FF7B72">-</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">] </span><span style="color:#FF7B72">==</span><span style="color:#A5D6FF"> '&#125;'</span><span style="color:#E6EDF3">):</span></span>
+<span class="line"><span style="color:#FF7B72">            break</span></span></code></pre><!----> <p>The key to this challenge will be handling the weird way the server is splitting the plaintext. We need to determine how to get the checksum we want to control the split location.</p> <p>To do this I created the following function.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E"># in order for this to work, target_chksum must be less than length due to mod, choosing artificially long buffer works</span></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> generate_x</span><span style="color:#E6EDF3">(y, target_chksum</span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3">buffer_space):</span></span>
+<span class="line"><span style="color:#8B949E">    # Start with an empty p and adjust dynamically</span></span>
+<span class="line"><span style="color:#8B949E">    # y + p = x</span></span>
+<span class="line"><span style="color:#E6EDF3">    p </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> ""</span></span>
+<span class="line"><span style="color:#E6EDF3">    </span></span>
+<span class="line"><span style="color:#FF7B72">    while</span><span style="color:#79C0FF"> True</span><span style="color:#E6EDF3">:</span></span>
+<span class="line"><span style="color:#E6EDF3">        x </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> y </span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3"> p</span></span>
+<span class="line"><span style="color:#E6EDF3">        mod_value </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> len</span><span style="color:#E6EDF3">(x) </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> 1</span><span style="color:#FF7B72"> +</span><span style="color:#79C0FF"> 1</span><span style="color:#8B949E"> #account for +1 in original and since we are adding a character add another +1</span></span>
+<span class="line"><span style="color:#E6EDF3">        </span></span>
+<span class="line"><span style="color:#8B949E">        # Required sum for x to get chksum at buffer</span></span>
+<span class="line"><span style="color:#E6EDF3">        required_sum </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> target_chksum </span><span style="color:#FF7B72">-</span><span style="color:#E6EDF3"> (</span><span style="color:#79C0FF">sum</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c) </span><span style="color:#FF7B72">for</span><span style="color:#E6EDF3"> c </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> x) </span><span style="color:#FF7B72">%</span><span style="color:#E6EDF3"> mod_value)</span></span>
+<span class="line"><span style="color:#E6EDF3">        </span></span>
+<span class="line"><span style="color:#8B949E">        # If we can form this required sum with an extra character, we're done</span></span>
+<span class="line"><span style="color:#FF7B72">        if</span><span style="color:#79C0FF"> 32</span><span style="color:#FF7B72"> &#x3C;=</span><span style="color:#E6EDF3"> required_sum </span><span style="color:#FF7B72">&#x3C;=</span><span style="color:#79C0FF"> 126</span><span style="color:#E6EDF3">:  </span><span style="color:#8B949E"># Printable ASCII range</span></span>
+<span class="line"><span style="color:#E6EDF3">            p </span><span style="color:#FF7B72">+=</span><span style="color:#79C0FF"> chr</span><span style="color:#E6EDF3">(required_sum)</span></span>
+<span class="line"><span style="color:#FF7B72">            return</span><span style="color:#E6EDF3"> y</span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3">p</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8B949E">        # Otherwise, keep adding characters (e.g., 'a') and try again</span></span>
+<span class="line"><span style="color:#E6EDF3">        p </span><span style="color:#FF7B72">+=</span><span style="color:#A5D6FF"> 'a'</span></span></code></pre><!----> <p>Essentially, we are pre-calculating the checksum. Then, because it is a mod, we can calculate the difference between where we want to be and the current value. If this difference is within the printable ascii range, we are done. Otherwise add a character to the output to hopefully cycle the mod and try again.</p> <p>We then can take this function and wrap our encryption with it to ensure that our bruteforce attack works:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E"># wrapper around server encrypt</span></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> encrypt</span><span style="color:#E6EDF3">(plaintext):</span></span>
+<span class="line"><span style="color:#E6EDF3">    valid_loc </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> generate_x(plaintext, </span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(plaintext))</span></span>
+<span class="line"><span style="color:#E6EDF3">    </span></span>
+<span class="line"><span style="color:#8B949E">    #ciphertext = server_enc(valid_loc) </span></span>
+<span class="line"><span style="color:#E6EDF3">    ciphertext </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> server_enc(valid_loc, </span><span style="color:#A5D6FF">"remote"</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">    int_val </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> int</span><span style="color:#E6EDF3">(ciphertext[</span><span style="color:#79C0FF">2</span><span style="color:#E6EDF3">:], </span><span style="color:#79C0FF">16</span><span style="color:#E6EDF3">)              </span><span style="color:#8B949E"># undo hex</span></span>
+<span class="line"><span style="color:#E6EDF3">    byte_len </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> (</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(ciphertext) </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> 1</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">//</span><span style="color:#79C0FF"> 2</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">    return</span><span style="color:#E6EDF3"> int_val.to_bytes(byte_len, </span><span style="color:#FFA657">byteorder</span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF">'big'</span><span style="color:#E6EDF3">)</span></span></code></pre><!----> <p>This produces our flag:</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span>utflag&#123;st0p_r0ll1ng_y0ur_0wn_crypt0!!&#125;</span></span></code></pre><!----> <br> <h4>Complete code below</h4> <hr> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"><span style="color:#8B949E"># basic from https://exploit-notes.hdks.org/exploit/cryptography/algorithm/aes-ecb-padding-attack/</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">from</span><span style="color:#E6EDF3"> Crypto.Cipher </span><span style="color:#FF7B72">import</span><span style="color:#79C0FF"> AES</span></span>
+<span class="line"><span style="color:#FF7B72">from</span><span style="color:#E6EDF3"> Crypto.Util.Padding </span><span style="color:#FF7B72">import</span><span style="color:#E6EDF3"> pad</span></span>
+<span class="line"><span style="color:#FF7B72">from</span><span style="color:#E6EDF3"> pwn </span><span style="color:#FF7B72">import</span><span style="color:#FF7B72"> *</span></span>
+<span class="line"><span style="color:#FF7B72">import</span><span style="color:#E6EDF3"> time</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">buffer_space </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> 128</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">conn </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> remote(</span><span style="color:#A5D6FF">'challenge.utctf.live'</span><span style="color:#E6EDF3">, </span><span style="color:#79C0FF">7150</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#A5D6FF">"""</span></span>
+<span class="line"><span style="color:#A5D6FF">Unknown model function for testing locally</span></span>
+<span class="line"><span style="color:#A5D6FF">"""</span></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> server_enc</span><span style="color:#E6EDF3">(input_val):</span></span>
+<span class="line"><span style="color:#E6EDF3">    key </span><span style="color:#FF7B72">=</span><span style="color:#FF7B72"> b</span><span style="color:#A5D6FF">'QQQQQQQQQQQQQQQQ'</span><span style="color:#8B949E"> # Unknown 16-byte key</span></span>
+<span class="line"><span style="color:#79C0FF">    FLAG</span><span style="color:#FF7B72"> =</span><span style="color:#A5D6FF"> 'FLAG</span><span style="color:#FF7B72">&#123;AAAAAAAAAAAAAAAAAA&#125;</span><span style="color:#A5D6FF">'</span><span style="color:#8B949E"> # Unknown flag</span></span>
+<span class="line"><span style="color:#E6EDF3">    cipher </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> AES</span><span style="color:#E6EDF3">.new(key, </span><span style="color:#79C0FF">AES</span><span style="color:#E6EDF3">.</span><span style="color:#79C0FF">MODE_ECB</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#E6EDF3">    </span></span>
+<span class="line"><span style="color:#E6EDF3">    </span></span>
+<span class="line"><span style="color:#E6EDF3">    chksum </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> sum</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c) </span><span style="color:#FF7B72">for</span><span style="color:#E6EDF3"> c </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> input_val) </span><span style="color:#FF7B72">%</span><span style="color:#E6EDF3"> (</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(input_val)</span><span style="color:#FF7B72">+</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"><span style="color:#E6EDF3">    pt </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> input_val[:chksum] </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> FLAG</span><span style="color:#FF7B72"> +</span><span style="color:#E6EDF3"> input_val[chksum:]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">    ct </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> cipher.encrypt(pad(pt.encode(</span><span style="color:#A5D6FF">'utf-8'</span><span style="color:#E6EDF3">), </span><span style="color:#79C0FF">AES</span><span style="color:#E6EDF3">.block_size))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">    return</span><span style="color:#79C0FF"> hex</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">int</span><span style="color:#E6EDF3">.from_bytes(ct, </span><span style="color:#FFA657">byteorder</span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF">'big'</span><span style="color:#E6EDF3">))</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> server_enc</span><span style="color:#E6EDF3">(input_val, dif):    </span></span>
+<span class="line"><span style="color:#E6EDF3">    conn.recv()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">    conn.sendline(input_val)</span></span>
+<span class="line"><span style="color:#E6EDF3">    in_data </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> conn.recvline().strip()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">    time.sleep(</span><span style="color:#79C0FF">.1</span><span style="color:#E6EDF3">) </span><span style="color:#8B949E"># don't spam the server</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">    return</span><span style="color:#E6EDF3"> in_data</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8B949E"># wrapper around server encrypt</span></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> encrypt</span><span style="color:#E6EDF3">(plaintext):</span></span>
+<span class="line"><span style="color:#E6EDF3">    valid_loc </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> generate_x(plaintext, </span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(plaintext))</span></span>
+<span class="line"><span style="color:#E6EDF3">    </span></span>
+<span class="line"><span style="color:#8B949E">    #ciphertext = server_enc(valid_loc) </span></span>
+<span class="line"><span style="color:#E6EDF3">    ciphertext </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> server_enc(valid_loc, </span><span style="color:#A5D6FF">"remote"</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">    int_val </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> int</span><span style="color:#E6EDF3">(ciphertext[</span><span style="color:#79C0FF">2</span><span style="color:#E6EDF3">:], </span><span style="color:#79C0FF">16</span><span style="color:#E6EDF3">)              </span><span style="color:#8B949E"># undo hex</span></span>
+<span class="line"><span style="color:#E6EDF3">    byte_len </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> (</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(ciphertext) </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> 1</span><span style="color:#E6EDF3">) </span><span style="color:#FF7B72">//</span><span style="color:#79C0FF"> 2</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">    return</span><span style="color:#E6EDF3"> int_val.to_bytes(byte_len, </span><span style="color:#FFA657">byteorder</span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF">'big'</span><span style="color:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> bruteforce</span><span style="color:#E6EDF3">():</span></span>
+<span class="line"><span style="color:#E6EDF3">    known_flag </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> 'utflag&#123;'</span></span>
+<span class="line"><span style="color:#E6EDF3">    total </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> buffer_space </span><span style="color:#FF7B72">-</span><span style="color:#79C0FF"> 1</span></span>
+<span class="line"><span style="color:#E6EDF3">    chars </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> ''</span><span style="color:#E6EDF3">.join([</span><span style="color:#79C0FF">chr</span><span style="color:#E6EDF3">(c) </span><span style="color:#FF7B72">for</span><span style="color:#E6EDF3"> c </span><span style="color:#FF7B72">in</span><span style="color:#79C0FF"> range</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">32</span><span style="color:#E6EDF3">,</span><span style="color:#79C0FF">127</span><span style="color:#E6EDF3">)])</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">    while</span><span style="color:#79C0FF"> True</span><span style="color:#E6EDF3">:</span></span>
+<span class="line"><span style="color:#E6EDF3">        payload </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> '1'</span><span style="color:#FF7B72"> *</span><span style="color:#E6EDF3"> (total </span><span style="color:#FF7B72">-</span><span style="color:#79C0FF"> len</span><span style="color:#E6EDF3">(known_flag)) </span><span style="color:#8B949E">#           16    16    16     16    16     16 ...</span></span>
+<span class="line"><span style="color:#E6EDF3">        ciphertext_1 </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> encrypt(payload) </span><span style="color:#8B949E"># should be 111.. 111.. 111.. 111..? ????? ????? </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">        for</span><span style="color:#E6EDF3"> c </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> chars:</span></span>
+<span class="line"><span style="color:#E6EDF3">            ciphertext_2 </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> encrypt(payload </span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3"> known_flag </span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3"> c) </span><span style="color:#8B949E"># should be 111.. 111.. 111.. 111..c ????? ????? </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8B949E">			# Compare the known parts of the flag (plus 1 is our character checking slot)</span></span>
+<span class="line"><span style="color:#FF7B72">            if</span><span style="color:#E6EDF3"> ciphertext_2[</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">:total</span><span style="color:#FF7B72">+</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">] </span><span style="color:#FF7B72">==</span><span style="color:#E6EDF3"> ciphertext_1[</span><span style="color:#79C0FF">0</span><span style="color:#E6EDF3">:total</span><span style="color:#FF7B72">+</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">]:</span></span>
+<span class="line"><span style="color:#E6EDF3">                known_flag </span><span style="color:#FF7B72">+=</span><span style="color:#E6EDF3"> c</span></span>
+<span class="line"><span style="color:#79C0FF">                print</span><span style="color:#E6EDF3">(known_flag)</span></span>
+<span class="line"><span style="color:#FF7B72">                break</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF7B72">            if</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c) </span><span style="color:#FF7B72">==</span><span style="color:#79C0FF"> 126</span><span style="color:#E6EDF3">):</span></span>
+<span class="line"><span style="color:#FF7B72">                break</span></span>
+<span class="line"><span style="color:#E6EDF3">    </span></span>
+<span class="line"><span style="color:#FF7B72">        if</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">len</span><span style="color:#E6EDF3">(known_flag) </span><span style="color:#FF7B72">></span><span style="color:#79C0FF"> 0</span><span style="color:#FF7B72"> and</span><span style="color:#E6EDF3"> known_flag[</span><span style="color:#FF7B72">-</span><span style="color:#79C0FF">1</span><span style="color:#E6EDF3">] </span><span style="color:#FF7B72">==</span><span style="color:#A5D6FF"> '&#125;'</span><span style="color:#E6EDF3">):</span></span>
+<span class="line"><span style="color:#FF7B72">            break</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8B949E"># in order for this to work, target_chksum must be less than length due to mod, choosing artificially long buffer works</span></span>
+<span class="line"><span style="color:#FF7B72">def</span><span style="color:#D2A8FF"> generate_x</span><span style="color:#E6EDF3">(y, target_chksum</span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3">buffer_space):</span></span>
+<span class="line"><span style="color:#8B949E">    # Start with an empty p and adjust dynamically</span></span>
+<span class="line"><span style="color:#E6EDF3">    p </span><span style="color:#FF7B72">=</span><span style="color:#A5D6FF"> ""</span></span>
+<span class="line"><span style="color:#E6EDF3">    </span></span>
+<span class="line"><span style="color:#FF7B72">    while</span><span style="color:#79C0FF"> True</span><span style="color:#E6EDF3">:</span></span>
+<span class="line"><span style="color:#E6EDF3">        x </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> y </span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3"> p</span></span>
+<span class="line"><span style="color:#E6EDF3">        mod_value </span><span style="color:#FF7B72">=</span><span style="color:#79C0FF"> len</span><span style="color:#E6EDF3">(x) </span><span style="color:#FF7B72">+</span><span style="color:#79C0FF"> 1</span><span style="color:#FF7B72"> +</span><span style="color:#79C0FF"> 1</span><span style="color:#8B949E"> #account for +1 in original and since we are adding a character add another</span></span>
+<span class="line"><span style="color:#E6EDF3">        </span></span>
+<span class="line"><span style="color:#8B949E">        # Required sum for x to get chksum = 64</span></span>
+<span class="line"><span style="color:#E6EDF3">        required_sum </span><span style="color:#FF7B72">=</span><span style="color:#E6EDF3"> target_chksum </span><span style="color:#FF7B72">-</span><span style="color:#E6EDF3"> (</span><span style="color:#79C0FF">sum</span><span style="color:#E6EDF3">(</span><span style="color:#79C0FF">ord</span><span style="color:#E6EDF3">(c) </span><span style="color:#FF7B72">for</span><span style="color:#E6EDF3"> c </span><span style="color:#FF7B72">in</span><span style="color:#E6EDF3"> x) </span><span style="color:#FF7B72">%</span><span style="color:#E6EDF3"> mod_value)</span></span>
+<span class="line"><span style="color:#E6EDF3">        </span></span>
+<span class="line"><span style="color:#8B949E">        # If we can form this required sum with an extra character, we're done</span></span>
+<span class="line"><span style="color:#FF7B72">        if</span><span style="color:#79C0FF"> 32</span><span style="color:#FF7B72"> &#x3C;=</span><span style="color:#E6EDF3"> required_sum </span><span style="color:#FF7B72">&#x3C;=</span><span style="color:#79C0FF"> 126</span><span style="color:#E6EDF3">:  </span><span style="color:#8B949E"># Printable ASCII range</span></span>
+<span class="line"><span style="color:#E6EDF3">            p </span><span style="color:#FF7B72">+=</span><span style="color:#79C0FF"> chr</span><span style="color:#E6EDF3">(required_sum)</span></span>
+<span class="line"><span style="color:#FF7B72">            return</span><span style="color:#E6EDF3"> y</span><span style="color:#FF7B72">+</span><span style="color:#E6EDF3">p</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8B949E">        # Otherwise, keep adding characters (e.g., 'a') and try again</span></span>
+<span class="line"><span style="color:#E6EDF3">        p </span><span style="color:#FF7B72">+=</span><span style="color:#A5D6FF"> 'a'</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">bruteforce()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E6EDF3">conn.close()</span></span></code></pre><!----><!----></div></div><!----><!----> <br> <div><hr></div><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_1frpc8i = {
+						base: new URL("..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../_app/immutable/entry/start.Cx-0n8EB.js"),
+						import("../_app/immutable/entry/app.DKTZEJGr.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 4],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+	
+</html>
