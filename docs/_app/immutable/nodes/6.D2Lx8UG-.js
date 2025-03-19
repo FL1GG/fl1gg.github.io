@@ -1,4 +1,4 @@
-import{a as l,t as s}from"../chunks/D8SAhovk.js";import"../chunks/a46zp2d9.js";import{n as t}from"../chunks/ItlUb4HE.js";var c=s(`<h1 class="svelte-1lz9yet">Contact Information</h1> <p class="svelte-1lz9yet">Email: cafligg20@gmail.com</p> <h1 class="svelte-1lz9yet">PGP Key</h1> <p class="svelte-1lz9yet">If you find it is necessary, here is my pgp public key:</p> <pre class="svelte-1lz9yet">-----BEGIN PGP PUBLIC KEY BLOCK-----
+import{h as s,a as l,t}from"../chunks/CeAfEtQA.js";import"../chunks/Da_r4eXK.js";import{$ as a,n as c}from"../chunks/BY6_CkA-.js";var I=t(`<h1 class="svelte-1lz9yet">Contact Information</h1> <p class="svelte-1lz9yet">Email: cafligg20@gmail.com</p> <h1 class="svelte-1lz9yet">PGP Key</h1> <p class="svelte-1lz9yet">If you find it is necessary, here is my pgp public key:</p> <pre class="svelte-1lz9yet">-----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mQGNBGegCLwBDAC5vpSKEIYYVxXeiDxuDyw6WEynYnghkC6FTgkvEdS32XnLsX9n
 OH9eCZuaA2viAs6UQODjqJARChFCwVVFsiuKh0EdvZkb9qLMyNPHTnmrUC4evXMF
@@ -39,4 +39,4 @@ zIYu2rtnIXdkBAC7rwWPXA6XT4fn/72LCsR20L4L3uPI1gIGwkqLnIKtob7Vxr51
 Oot3xIyiI3opKv7ShXdsx4o9WxRQRv3zHo79
 =C+Za
 -----END PGP PUBLIC KEY BLOCK-----
-</pre>`,1);function A(e){var n=c();t(8),l(e,n)}export{A as component};
+</pre>`,1);function r(e){var n=I();s(i=>{a.title="Contact"}),c(8),l(e,n)}export{r as component};
