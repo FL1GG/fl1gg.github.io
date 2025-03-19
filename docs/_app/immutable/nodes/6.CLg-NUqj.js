@@ -1,4 +1,4 @@
-import{a as l,t as s}from"../chunks/Dwf-VV-B.js";import"../chunks/D4n077k-.js";import{n as t}from"../chunks/DCFcRc6v.js";var c=s(`<h1 class="svelte-1lz9yet">Contact Information</h1> <p class="svelte-1lz9yet">Email: cafligg20@gmail.com</p> <h1 class="svelte-1lz9yet">PGP Key</h1> <p class="svelte-1lz9yet">If you find it is necessary, here is my pgp public key:</p> <pre class="svelte-1lz9yet">-----BEGIN PGP PUBLIC KEY BLOCK-----
+import{a as l,t as s}from"../chunks/D8SAhovk.js";import"../chunks/a46zp2d9.js";import{n as t}from"../chunks/ItlUb4HE.js";var c=s(`<h1 class="svelte-1lz9yet">Contact Information</h1> <p class="svelte-1lz9yet">Email: cafligg20@gmail.com</p> <h1 class="svelte-1lz9yet">PGP Key</h1> <p class="svelte-1lz9yet">If you find it is necessary, here is my pgp public key:</p> <pre class="svelte-1lz9yet">-----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mQGNBGegCLwBDAC5vpSKEIYYVxXeiDxuDyw6WEynYnghkC6FTgkvEdS32XnLsX9n
 OH9eCZuaA2viAs6UQODjqJARChFCwVVFsiuKh0EdvZkb9qLMyNPHTnmrUC4evXMF

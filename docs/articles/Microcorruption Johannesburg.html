@@ -1,26 +1,37 @@
 <!doctype html>
 <html lang="en">
 	<head>
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-7Z9FV4098Q"></script>
+		<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-7Z9FV4098Q');
+		</script>
+
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		
 		<link href="../_app/immutable/assets/0.CkCJ_Iij.css" rel="stylesheet">
-		<link href="../_app/immutable/assets/4.BGKaKUs6.css" rel="stylesheet">
-		<link rel="modulepreload" href="../_app/immutable/entry/start.Cx-0n8EB.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/BWnATT0-.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/DCFcRc6v.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/BqHloRb4.js">
-		<link rel="modulepreload" href="../_app/immutable/entry/app.DKTZEJGr.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/C6U3RdpY.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/Dwf-VV-B.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CBZjZzat.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/0.4FUs_ruB.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/D4n077k-.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/DhnXOQm4.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CBvMsN_n.js">
-		<link rel="modulepreload" href="../_app/immutable/nodes/4.CIZ-SDIx.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CML7eN2H.js"><!--[--><!--]--><title>Microcorruption Johannesburg</title>
+		<link href="../_app/immutable/assets/5.BGKaKUs6.css" rel="stylesheet">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.DhW7nl4J.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CzoHhTzk.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/ItlUb4HE.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BmeHx-Ma.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.D6M5_GHs.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BO4WaQy6.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/D8SAhovk.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Lfl0KMkj.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/0.Benv2eTu.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/a46zp2d9.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CqVW6OwZ.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/haIkayOh.js">
+		<link rel="modulepreload" href="../_app/immutable/nodes/5.BsZsBx08.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CzUNRz-P.js"><!--[--><!--]--><title>Microcorruption Johannesburg</title>
 	</head>
+	
 	<body data-sveltekit-preload-data="hover" style="background-color:  #E9E9DF;">
 		<div style="display: contents"><!--[--><!--[--><!----><div class="site-header svelte-1pnrz5s"><h1 id="site-title" class="svelte-1pnrz5s"> Anoth3r Site</h1> <h1 class="blink svelte-1pnrz5s">_</h1></div> <hr class="hr-top svelte-1pnrz5s"> <div class="svelte-1pnrz5s"><ul class="nav-bar svelte-1pnrz5s"><li class="svelte-1pnrz5s"><a href="/" class="svelte-1pnrz5s">Home</a></li> <li class="svelte-1pnrz5s"><a href="/about" class="svelte-1pnrz5s">About</a></li> <li class="svelte-1pnrz5s"><a href="https://github.com/fl1gg" class="svelte-1pnrz5s">Github</a></li> <li class="svelte-1pnrz5s"><a href="/contact" class="svelte-1pnrz5s">Contact</a></li></ul></div> <br class="svelte-1pnrz5s"><!----> <!----><div class="articles svelte-1qj7sin"><div class="header svelte-1qj7sin"><h1 class="title svelte-1qj7sin">Microcorruption Johannesburg</h1> <p class="subtitle svelte-1qj7sin">The process and solution for the eight Microcorruption level</p></div> <div class="tags svelte-1qj7sin"><!--[--><span class="tag svelte-1qj7sin">#microcorruption</span><span class="tag svelte-1qj7sin">#reversing</span><span class="tag svelte-1qj7sin">#pwn</span><!--]--></div> <br class="svelte-1qj7sin"> <hr class="svelte-1qj7sin"> <div id="page" class="svelte-1qj7sin"><!----><p>Looking at the login function, we see it is very similar to our previous challenge (Montevideo). However, here we get our first taste of a stack canary.</p> <!----><pre class="shiki github-dark-default" style="background-color:#0d1117;color:#e6edf3" tabindex="0"><code><span class="line"></span>
 <span class="line"><span style="color:#E6EDF3">452c &#x3C;login></span></span>
@@ -47,18 +58,18 @@
 			
 			<script>
 				{
-					__sveltekit_1frpc8i = {
+					__sveltekit_1awhzjz = {
 						base: new URL("..", location).pathname.slice(0, -1)
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("../_app/immutable/entry/start.Cx-0n8EB.js"),
-						import("../_app/immutable/entry/app.DKTZEJGr.js")
+						import("../_app/immutable/entry/start.DhW7nl4J.js"),
+						import("../_app/immutable/entry/app.D6M5_GHs.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
-							node_ids: [0, 4],
+							node_ids: [0, 5],
 							data: [null,null],
 							form: null,
 							error: null
